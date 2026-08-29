@@ -8,7 +8,7 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 - [x] **M2 — Dashboard** (`/api/dashboard`, dashboard UI)
 - [x] **M3 — Lesson system** (render markdown, prev/next, mark as complete)
 - [x] **M4 — Progress tracking** (SQLite: lessons, lesson_progress, streak, sessions)
-- [x] **M5 — Challenge system** (5 challenge Python, hidden tests, hints, attempts)
+- [x] **M5 — Challenge system** (15 challenge Python: 10 easy + 5 medium, hidden tests, hints, attempts)
 - [x] **M6 — Python playground** (safe subprocess runner, timeout, isolasi)
 - [x] **M7 — Notes + Mistake Journal**
 - [ ] **M8 — Weekly Review** (halaman dasar sudah ada, perbaiki rekomendasi data)
@@ -25,6 +25,7 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 - [x] Mark as Complete (server-side)
 - [x] Python Playground (run kode)
 - [x] 5 Python challenges (easy) dengan hidden tests + hint 1/2
+- [x] 15 Python challenges (10 easy + 5 medium) — Problem Solving: binary search, two sum, dsb.
 - [x] Notes & Mistake Journal (CRUD)
 - [x] Progress per topik
 - [x] Dark mode + search (Ctrl+K) + Ctrl+Enter run
@@ -41,12 +42,28 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 - [x] Day 07 — List
 - [x] Day 08 — Dictionary
 - [x] Day 09 — Set & Tuple
-- [ ] Day 10 — Exception (`try/except`)
-- [ ] Day 11 — File handling
-- [ ] Day 12 — Module & Package
-- [ ] ... lanjut sesuai `belajar.txt`
+- [x] Day 10 — Exception (`try/except`)
+- [x] Day 11 — File Handling
+- [x] Day 12 — Module & Package
+- [x] Day 13 — OOP: Class & Object
+- [x] Day 14 — OOP: Inheritance & Polymorphism
+- [x] Day 15 — Typing & Dataclass
+- [x] Day 16 — Decorator
+- [x] Day 17 — Generator & Iterator
+- [x] Day 18 — Context Manager
+- [x] Day 19 — Big-O & Complexity
+- [x] Day 20 — Searching
+- [x] Day 21 — Sorting
+- [x] Day 22 — Data Structures
+- [x] Day 23 — Testing dengan pytest
+- [x] Day 24 — Git
+- [x] Day 25 — Debugging
+- [x] Day 26 — HTTP & REST
+- [x] Day 27 — FastAPI
+- [x] Day 28 — Backend Project (Employee API)
+- [ ] ... lanjut stack sesuai `belajar.txt` (PHP, SQL, CodeIgniter, Laravel, JavaScript, SE, Docker, Linux, Security, System Design)
 
-## Challenge (Python Easy)
+## Challenge (Python Easy + Medium)
 
 - [x] Find Largest Number
 - [x] Sum of List
@@ -58,6 +75,11 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 - [x] Factorial
 - [x] Count Vowels
 - [x] Second Largest
+- [x] Binary Search (medium)
+- [x] Two Sum (medium)
+- [x] Find Missing Number (medium)
+- [x] Balanced Brackets (medium)
+- [x] Sort List (medium)
 - [ ] ... lanjut sesuai Problem Solving (`belajar.txt` Level 2)
 
 ## Catatan

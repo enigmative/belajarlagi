@@ -68,7 +68,7 @@ BelajarLagi/
 
 Setiap lesson membawa kamu melalui: Objective → Theory → Analogy → Example → Code → Explanation → Common Mistakes → Manual Exercises → Challenge → Reflection → Checklist.
 
-Materi dikembangkan bertahap dari `belajar.txt`. Tersedia Day 01–09: Variable & Data Types, Operators, Conditional, Loop, Function, String, List, Dictionary, Set & Tuple.
+Materi dikembangkan bertahap dari `belajar.txt`. Tersedia Day 01–28: Python Fundamentals (materi dasar → set & tuple), Python Intermediate (exception, file, module, OOP, typing, decorator, generator, context manager), Python Problem Solving (Big-O, searching, sorting, data structures), Python Software Engineering (pytest, Git, debugging), Python Backend (HTTP & REST, FastAPI, project Employee API).
 
 ## How challenges work
 
