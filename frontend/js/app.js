@@ -151,7 +151,7 @@ async function pageChallenges() {
       <div class="challenge"><strong>${esc(c.title)}</strong>
         <span class="badge">${esc(c.difficulty)}</span><span class="badge">${esc(c.topic || '')}</span>
         <p class="ghost">Attempts: ${c.stats.attempts || 0} · Passed: ${c.stats.passed || 0} · Hints: ${c.stats.hints || 0}</p>
-        <a class="act" href="#/challenge/${esc(c.slug)}">Start Challenge</a></div>`).join('') || '<p class="ghost">Belum ada challenge.</p>'`;
+        <a class="act" href="#/challenge/${esc(c.slug)}">Start Challenge</a></div>`).join('') || '<p class="ghost">Belum ada challenge.</p>'}`;
 }
 
 async function pageChallenge(slug) {
@@ -189,7 +189,7 @@ async function pageProjects() {
       <table><tbody>${p.stages.map(s => `
         <tr><td class="${s.is_done ? 'done-task' : ''}">
           <input type="checkbox" data-proj="${esc(p.slug)}" data-task="${s.id}" ${s.is_done ? 'checked' : ''} onchange="actToggleTask(this)"> ${esc(s.title)}
-        </td></tr>`).join('')}</tbody></table></div>`).join('') || '<p class="ghost">Tidak ada project.</p>';
+        </td></tr>`).join('')}</tbody></table></div>`).join('') || '<p class="ghost">Tidak ada project.</p>');
 }
 
 async function pageNotes() {
