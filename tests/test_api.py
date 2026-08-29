@@ -55,7 +55,7 @@ def test_playground_blocks_os():
 def test_challenges_list():
     r = client.get("/api/challenges")
     assert r.status_code == 200
-    assert len(r.json()) >= 10
+    assert len(r.json()) >= 15
 
 
 def test_challenge_fizzbuzz():

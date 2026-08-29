@@ -72,3 +72,22 @@ def test_new_challenges_all_pass_with_correct_solution():
             assert res["status"] == "passed", f"{slug}: {res}"
     finally:
         conn.close()
+
+
+def test_medium_challenges_all_pass_with_correct_solution():
+    conn = get_conn()
+    sols = {
+        "binary-search": "def solve(nums, target):\n    lo, hi = 0, len(nums) - 1\n    while lo <= hi:\n        mid = (lo + hi) // 2\n        if nums[mid] == target:\n            return mid\n        elif nums[mid] < target:\n            lo = mid + 1\n        else:\n            hi = mid - 1\n    return -1",
+        "two-sum": "def solve(nums, target):\n    seen = {}\n    for i, n in enumerate(nums):\n        if target - n in seen:\n            return [seen[target - n], i]\n        seen[n] = i",
+        "missing-number": "def solve(nums):\n    n = len(nums)\n    return sum(range(n + 1)) - sum(nums)",
+        "balanced-brackets": 'def solve(s):\n    pairs = {")": "(", "]": "[", "}": "{"}\n    stack = []\n    for c in s:\n        if c in "([{":\n            stack.append(c)\n        elif c in ")]}":\n            if not stack or stack.pop() != pairs[c]:\n                return False\n    return not stack',
+        "sort-list": "def solve(nums):\n    a = nums[:]\n    for i in range(1, len(a)):\n        key = a[i]\n        j = i - 1\n        while j >= 0 and a[j] > key:\n            a[j + 1] = a[j]\n            j -= 1\n        a[j + 1] = key\n    return a",
+    }
+    try:
+        for slug, code in sols.items():
+            c = conn.execute("SELECT * FROM challenges WHERE slug=?", (slug,)).fetchone()
+            assert c, f"challenge {slug} missing"
+            res = chall.evaluate(c, code)
+            assert res["status"] == "passed", f"{slug}: {res}"
+    finally:
+        conn.close()
