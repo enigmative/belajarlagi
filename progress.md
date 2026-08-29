@@ -61,7 +61,37 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 - [x] Day 26 — HTTP & REST
 - [x] Day 27 — FastAPI
 - [x] Day 28 — Backend Project (Employee API)
-- [ ] ... lanjut stack sesuai `belajar.txt` (PHP, SQL, CodeIgniter, Laravel, JavaScript, SE, Docker, Linux, Security, System Design)
+- [x] SQL — CRUD & Query Dasar
+- [x] SQL — JOIN
+- [x] SQL — Database Design & Normalization
+- [x] SQL — Transaction & ACID
+- [x] SQL — Query Optimization
+- [x] PHP — Fundamentals
+- [x] PHP — Function, Array, & Loop
+- [x] PHP — OOP
+- [x] PHP — Composer, PSR, & SOLID
+- [x] CodeIgniter — MVC & Routing
+- [x] CodeIgniter — Model, Database, & Validation
+- [x] CodeIgniter — Session, Auth, Filter, & REST API
+- [x] Laravel — Routing, Controller, Blade, & Middleware
+- [x] Laravel — Eloquent ORM & Relasi
+- [x] Laravel — Auth, Queue, Events, & Fitur Produksi
+- [x] JavaScript — Fundamentals
+- [x] JavaScript — DOM & Events
+- [x] JavaScript — Async, Fetch, Promise, JSON
+- [x] Frontend Framework — Vue & React
+- [x] Web Security — Auth, Session, Cookie, Password
+- [x] Web Security — CSRF, XSS, SQL Injection
+- [x] Web Security — API Hardening
+- [x] Docker — Image, Container, Dockerfile
+- [x] Docker — Volume, Network, Environment, Compose
+- [x] Linux — Command Line Dasar
+- [x] Linux — Process, Service, & Logs
+- [x] Redis & Queue — Cache, Job, Worker
+- [x] CI/CD — Build, Test, Deploy
+- [x] Software Architecture — MVC, Layered, Clean
+- [x] System Design — Komponen & Scaling
+- [x] Observability — Logging, Metrics, Alerting
 
 ## Challenge (Python Easy + Medium)
 
