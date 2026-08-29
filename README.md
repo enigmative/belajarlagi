@@ -68,7 +68,7 @@ BelajarLagi/
 
 Setiap lesson membawa kamu melalui: Objective → Theory → Analogy → Example → Code → Explanation → Common Mistakes → Manual Exercises → Challenge → Reflection → Checklist.
 
-Materi dikembangkan bertahap dari `belajar.txt`, dimulai dari `Day 01` (Python: Variable & Data Types).
+Materi dikembangkan bertahap dari `belajar.txt`. Tersedia Day 01–09: Variable & Data Types, Operators, Conditional, Loop, Function, String, List, Dictionary, Set & Tuple.
 
 ## How challenges work
 

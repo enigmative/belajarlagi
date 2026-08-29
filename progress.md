@@ -33,10 +33,32 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 ## Konten
 
 - [x] Day 01 — Variable & Data Types (`content/daily/day01.md`)
-- [ ] Day 02 — Operator & I/O
-- [ ] Day 03 — Conditional
-- [ ] Day 04 — Loop
+- [x] Day 02 — Operators
+- [x] Day 03 — Conditional
+- [x] Day 04 — Loop
+- [x] Day 05 — Function
+- [x] Day 06 — String
+- [x] Day 07 — List
+- [x] Day 08 — Dictionary
+- [x] Day 09 — Set & Tuple
+- [ ] Day 10 — Exception (`try/except`)
+- [ ] Day 11 — File handling
+- [ ] Day 12 — Module & Package
 - [ ] ... lanjut sesuai `belajar.txt`
+
+## Challenge (Python Easy)
+
+- [x] Find Largest Number
+- [x] Sum of List
+- [x] Is It Even?
+- [x] Reverse String
+- [x] Count Characters
+- [x] FizzBuzz
+- [x] Is Leap Year?
+- [x] Factorial
+- [x] Count Vowels
+- [x] Second Largest
+- [ ] ... lanjut sesuai Problem Solving (`belajar.txt` Level 2)
 
 ## Catatan
 
