@@ -20,12 +20,46 @@ ROADMAP = [
         ],
     },
     {
+        "name": "Python Intermediate",
+        "phase": "python",
+        "topics": [
+            {"title": "Exception", "lesson": "day10"},
+            {"title": "File Handling", "lesson": "day11"},
+            {"title": "Module & Package", "lesson": "day12"},
+            {"title": "OOP: Class & Object", "lesson": "day13"},
+            {"title": "OOP: Inheritance & Poly", "lesson": "day14"},
+            {"title": "Typing & Dataclass", "lesson": "day15"},
+            {"title": "Decorator", "lesson": "day16"},
+            {"title": "Generator", "lesson": "day17"},
+            {"title": "Context Manager", "lesson": "day18"},
+        ],
+    },
+    {
         "name": "Python Problem Solving",
         "phase": "python",
         "topics": [
-            {"title": "Searching", "lesson": None},
-            {"title": "Sorting", "lesson": None},
-            {"title": "Hash Map", "lesson": None},
+            {"title": "Big-O / Complexity", "lesson": "day19"},
+            {"title": "Searching", "lesson": "day20"},
+            {"title": "Sorting", "lesson": "day21"},
+            {"title": "Data Structures", "lesson": "day22"},
+        ],
+    },
+    {
+        "name": "Python Software Engineering",
+        "phase": "python",
+        "topics": [
+            {"title": "Testing (pytest)", "lesson": "day23"},
+            {"title": "Git", "lesson": "day24"},
+            {"title": "Debugging", "lesson": "day25"},
+        ],
+    },
+    {
+        "name": "Python Backend",
+        "phase": "python",
+        "topics": [
+            {"title": "HTTP & REST", "lesson": "day26"},
+            {"title": "FastAPI Intro", "lesson": "day27"},
+            {"title": "Backend Project (EMP API)", "lesson": "day28"},
         ],
     },
     {
