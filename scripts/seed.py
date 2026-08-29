@@ -10,6 +10,14 @@ from database.database import get_conn, init_db
 # lessons seeded: content lives in content/daily/*.md
 LESSONS = [
     {"slug": "day01", "title": "Day 01 — Variable & Data Types", "phase": "python", "order": 1, "file": "daily/day01.md"},
+    {"slug": "day02", "title": "Day 02 — Operators", "phase": "python", "order": 2, "file": "daily/day02.md"},
+    {"slug": "day03", "title": "Day 03 — Conditional", "phase": "python", "order": 3, "file": "daily/day03.md"},
+    {"slug": "day04", "title": "Day 04 — Loop", "phase": "python", "order": 4, "file": "daily/day04.md"},
+    {"slug": "day05", "title": "Day 05 — Function", "phase": "python", "order": 5, "file": "daily/day05.md"},
+    {"slug": "day06", "title": "Day 06 — String", "phase": "python", "order": 6, "file": "daily/day06.md"},
+    {"slug": "day07", "title": "Day 07 — List", "phase": "python", "order": 7, "file": "daily/day07.md"},
+    {"slug": "day08", "title": "Day 08 — Dictionary", "phase": "python", "order": 8, "file": "daily/day08.md"},
+    {"slug": "day09", "title": "Day 09 — Set & Tuple", "phase": "python", "order": 9, "file": "daily/day09.md"},
 ]
 
 PHASES = [

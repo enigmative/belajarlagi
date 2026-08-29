@@ -9,10 +9,14 @@ ROADMAP = [
         "phase": "python",
         "topics": [
             {"title": "Variable & Data Types", "lesson": "day01"},
-            {"title": "Operators", "lesson": None},
-            {"title": "Conditional", "lesson": None},
-            {"title": "Loop", "lesson": None},
-            {"title": "Function", "lesson": None},
+            {"title": "Operators", "lesson": "day02"},
+            {"title": "Conditional", "lesson": "day03"},
+            {"title": "Loop", "lesson": "day04"},
+            {"title": "Function", "lesson": "day05"},
+            {"title": "String", "lesson": "day06"},
+            {"title": "List", "lesson": "day07"},
+            {"title": "Dictionary", "lesson": "day08"},
+            {"title": "Set & Tuple", "lesson": "day09"},
         ],
     },
     {
