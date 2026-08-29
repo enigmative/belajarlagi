@@ -1,107 +1,128 @@
+/* ===================================================================
+   Belajar Lagi — overrides + bespoke components on top of Vuexy
+   (real Vuexy CSS/JS loaded from S3 in index.html).
+   Keeps class names emitted by app.js. Only our custom bits live here.
+   =================================================================== */
+
+/* ---------- Theme (drive Vuexy dark-layout) ---------- */
 :root {
-  --bg: #f5f6fa;
-  --panel: #ffffff;
-  --text: #1f2328;
-  --muted: #6b7280;
-  --accent: #2563eb;
-  --accent2: #16a34a;
-  --border: #e2e4ea;
-  --ok: #16a34a;
-  --err: #dc2626;
+  --bl-accent: #7367f0;
+  --bl-bg: #f8f8f8;
+  --bl-ok: #28c76f;
+  --bl-err: #ea5455;
 }
 
-[data-theme="dark"] {
-  --bg: #0f1115;
-  --panel: #1a1d24;
-  --text: #e6e8ec;
-  --muted: #9aa1ac;
-  --accent: #60a5fa;
-  --accent2: #4ade80;
-  --border: #2a2f38;
-  --ok: #4ade80;
-  --err: #f87171;
+/* ---------- Content padding is applied by Vuexy .content; keep it light ---------- */
+#content { min-height: 60vh; }
+
+/* ---------- Bespoke SPA classes ---------- */
+
+/* Stat cards: our .cards grid + .card .label/.value (Bootstrap owns .card) */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1.1rem;
+  margin: 1.2rem 0 0;
+}
+.cards .card { margin-bottom: 0 !important; }
+.cards .card .label {
+  font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+  color: #b8c2cc; font-weight: 500;
+}
+.cards .card .value { font-size: 1.6rem; font-weight: 700; color: #5e5873; }
+
+/* Progress bars */
+.bar {
+  height: .55rem; background: #ebe9f1; border-radius: 2rem; overflow: hidden;
+  margin: .5rem 0 .25rem;
+}
+.bar > div { height: 100%; background: var(--bl-accent); border-radius: 2rem; }
+.bar.ok > div { background: var(--bl-ok); }
+.ghost { color: #b8c2cc; }
+
+/* Generic panel container (like a Vuexy card) */
+.panel {
+  background: #fff; border: 0; border-radius: .65rem;
+  box-shadow: 0 4px 24px 0 rgba(34, 41, 47, .1);
+  padding: 1.25rem 1.5rem; margin: 1rem 0;
+}
+body.dark-layout .panel { background: #283046; box-shadow: 0 4px 24px 0 rgba(0,0,0,.24); }
+
+/* Code blocks */
+code, pre { font-family: 'Montserrat', ui-monospace, Consolas, monospace, sans-serif; }
+code { background: rgba(115, 103, 240, .08); color: #7367f0; padding: .15rem .4rem; border-radius: .3rem; }
+pre {
+  background: #f6f6f9; border-radius: .5rem; padding: 1rem; overflow-x: auto;
+  border: 1px solid #ebe9f1; color: #5e5873;
+}
+pre code { background: none; color: inherit; padding: 0; }
+body.dark-layout pre { background: #161d31; border-color: #3b4253; color: #b8c2cc; }
+
+/* Roadmap topics + status dots */
+.topic { display: flex; align-items: center; gap: .75rem; padding: .55rem .25rem; border-bottom: 1px solid #f1f1f4; }
+.topic:last-child { border-bottom: 0; }
+.topic .st {
+  width: 1.5rem; height: 1.5rem; border-radius: 50%; flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center; font-size: .75rem;
+}
+.st.done { background: var(--bl-ok); color: #fff; }
+.st.cur { background: var(--bl-accent); color: #fff; }
+.st.none { border: 2px solid #b8c2cc; color: #b8c2cc; }
+
+/* Challenge list items */
+.challenge {
+  background: #fff; border: 0; border-radius: .65rem;
+  box-shadow: 0 4px 24px 0 rgba(34, 41, 47, .08);
+  padding: 1rem 1.25rem; margin: .8rem 0;
+}
+body.dark-layout .challenge { background: #283046; }
+.badge { font-weight: 600; }
+.failure { color: var(--bl-err); }
+
+/* Hints */
+.hint {
+  background: rgba(115, 103, 240, .06); border: 1px dashed #7367f0;
+  padding: .7rem 1rem; border-radius: .5rem; margin: .5rem 0;
 }
 
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: -apple-system, Segoe UI, Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
+/* Playground output */
+.output {
+  background: #161d31; color: #d0d4e1; border-radius: .5rem; padding: 1rem;
+  white-space: pre-wrap; min-height: 3.5rem; margin-top: .75rem;
 }
+.output.err { border: 1px solid var(--bl-err); }
+.output.ok { border: 1px solid var(--bl-ok); }
 
-#app { display: flex; min-height: 100vh; }
-#sidebar {
-  width: 230px; flex-shrink: 0; background: var(--panel);
-  border-right: 1px solid var(--border); padding: 16px 12px;
-  display: flex; flex-direction: column; gap: 8px;
-  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+/* Notes / mistakes */
+.note-item, .mistake-item {
+  background: #fff; border: 0; border-radius: .55rem;
+  box-shadow: 0 4px 24px 0 rgba(34, 41, 47, .07);
+  padding: .9rem 1.1rem; margin: .8rem 0;
 }
-.brand { font-weight: 800; letter-spacing: 1px; margin-bottom: 12px; }
-#sidebar nav { display: flex; flex-direction: column; gap: 2px; }
-#sidebar nav a {
-  padding: 8px 10px; border-radius: 8px; color: var(--text);
-  text-decoration: none; font-size: 14px;
+body.dark-layout .note-item, body.dark-layout .mistake-item { background: #283046; }
+
+/* Buttons that were .act in the old CSS -> reuse Bootstrap btn style */
+button.act, a.act, .act {
+  display: inline-block;
 }
-#sidebar nav a:hover, #sidebar nav a.active { background: var(--accent); color: #fff; }
-.sidebar-foot { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
-.sidebar-foot button, button.act {
-  background: var(--accent); color: #fff; border: none;
-  padding: 10px 14px; border-radius: 8px; cursor: pointer; font-size: 14px;
-}
-button { cursor: pointer; }
-#content { flex: 1; padding: 28px 36px; max-width: 900px; }
+button.act { border: none; }
 
-h1 { font-size: 26px; }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
-.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
-.card .label { font-size: 12px; color: var(--muted); text-transform: uppercase; }
-.card .value { font-size: 22px; font-weight: 700; }
-.bar { background: var(--border); border-radius: 8px; height: 14px; overflow: hidden; margin: 6px 0; }
-.bar > div { height: 100%; background: var(--accent); border-radius: 8px; }
-.bar.ok > div { background: var(--accent2); }
+/* Full-width textareas keep monospace so code lines up */
+textarea { font-family: ui-monospace, Consolas, monospace; }
+textarea.mono, #ch-code, #pg-code { font-family: ui-monospace, Consolas, monospace; }
 
-.panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px 22px; margin: 14px 0; }
-code, pre { font-family: ui-monospace, Consolas, monospace; background: var(--bg); border-radius: 6px; }
-code { padding: 1px 5px; }
-pre { padding: 14px; overflow-x: auto; }
-pre code { background: none; padding: 0; }
-
-.topic { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid var(--border); }
-.topic .st { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
-.st.done { background: var(--ok); color: #fff; }
-.st.cur { background: var(--accent); color: #fff; }
-.st.none { border: 2px solid var(--muted); color: var(--muted); }
-
-textarea, input {
-  width: 100%; background: var(--bg); color: var(--text);
-  border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: ui-monospace, Consolas, monospace;
-}
-label { display: block; margin: 10px 0 4px; color: var(--muted); font-size: 13px; }
-.output { background: #0d1117; color: #c9d1d9; border-radius: 8px; padding: 14px; white-space: pre-wrap; min-height: 60px; margin-top: 10px; }
-.output.err { border: 1px solid var(--err); }
-
-.challenge { border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 10px 0; background: var(--panel); }
-.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 12px; background: var(--bg); margin-right: 6px; }
-.failure { color: var(--err); }
-
-.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.hint { background: var(--bg); border: 1px dashed var(--border); padding: 10px 14px; border-radius: 8px; margin: 8px 0; }
-
-.note-item, .mistake-item { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin: 10px 0; }
-.del { background: var(--err); color: #fff; border: none; border-radius: 6px; padding: 4px 10px; }
-
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: flex-start; justify-content: center; padding-top: 12vh; }
-.modal.hidden { display: none; }
-.modal-box { background: var(--panel); padding: 20px; border-radius: 12px; width: 560px; max-width: 90vw; }
-#search-results { list-style: none; padding: 0; margin: 12px 0 0; }
-#search-results li a { display: block; padding: 8px; border-radius: 6px; color: var(--text); text-decoration: none; }
-#search-results li a:hover { background: var(--bg); }
-
-table { width: 100%; border-collapse: collapse; }
-th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+/* done tasks */
 .done-task { opacity: .55; text-decoration: line-through; }
-a { color: var(--accent); }
-.ghost { color: var(--muted); }
-img { max-width: 100%; }
+
+/* light table separation (Vuexy has its own; keep ours minimal) */
+table th, table td { vertical-align: middle; }
+
+/* Search modal: drive via our own .hidden toggle + Bootstrap modal shell */
+#search-modal.hidden { display: none !important; }
+#search-modal .modal-dialog { max-width: 560px; }
+#search-results { list-style: none; padding: 0; margin: 0; max-height: 50vh; overflow-y: auto; }
+#search-results li { margin-bottom: .15rem; }
+#search-results li a {
+  display: block; padding: .5rem .75rem; border-radius: .4rem; color: inherit; text-decoration: none;
+}
+#search-results li a:hover { background: rgba(115, 103, 240, .08); }

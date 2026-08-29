@@ -313,10 +313,10 @@ async function route() {
   const seg = parts[0] || 'dashboard';
   const sub = parts[1];
 
-  document.querySelectorAll('[data-nav]').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.nav-item.active').forEach(li => li.classList.remove('active'));
   const navID = seg === 'lessons' || seg === 'challenge' ? (seg === 'challenge' ? 'challenges' : seg) : seg;
-  const nav = document.querySelector(`[data-nav][href="#/${navID}"]`);
-  if (nav) nav.classList.add('active');
+  const nav = document.querySelector(`[data-nav][href^="#/${navID}"]`);
+  if (nav) { nav.classList.add('active'); nav.closest('li.nav-item')?.classList.add('active'); }
 
   const el = document.getElementById('content');
   try {
@@ -327,6 +327,10 @@ async function route() {
   } catch (e) {
     el.innerHTML = `<div class="panel"><h2>Error</h2><pre>${esc(e.message)}</pre></div>`;
   }
+  const titles = { dashboard: 'Dashboard', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings' };
+  const pt = document.getElementById('page-title');
+  if (pt) pt.textContent = titles[seg] || 'Belajar Lagi';
+  if (window.feather) feather.replace();
   window.scrollTo(0, 0);
 }
 
@@ -334,8 +338,13 @@ async function route() {
 function applyTheme() {
   const t = localStorage.getItem('bl-theme') || 'light';
   document.documentElement.setAttribute('data-theme', t);
+  document.body.classList.toggle('dark-layout', t === 'dark');
+  document.body.classList.toggle('semi-dark-layout', false);
   const btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = t === 'dark' ? 'Light' : 'Dark';
+  if (btn) {
+    const ic = btn.querySelector('i[data-feather]');
+    if (ic) { ic.setAttribute('data-feather', t === 'dark' ? 'sun' : 'moon'); if (window.feather) feather.replace(); }
+  }
 }
 function toggleTheme() {
   const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -344,13 +353,18 @@ function toggleTheme() {
 }
 
 /* ================= Search ================= */
+function showModal(show) {
+  const m = document.getElementById('search-modal');
+  if (window.$ && $.fn && $.fn.modal) { $(m).modal(show ? 'show' : 'hide'); }
+  else m.classList.toggle('hidden', !show);
+}
 function openSearch() {
-  document.getElementById('search-modal').classList.remove('hidden');
   document.getElementById('search-input').value = '';
   document.getElementById('search-results').innerHTML = '';
+  showModal(true);
   document.getElementById('search-input').focus();
 }
-function closeSearch() { document.getElementById('search-modal').classList.add('hidden'); }
+function closeSearch() { showModal(false); }
 async function doSearch() {
   const q = document.getElementById('search-input').value;
   const ul = document.getElementById('search-results');
@@ -366,6 +380,8 @@ window.addEventListener('hashchange', route);
 document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 document.getElementById('search-btn').addEventListener('click', openSearch);
 document.getElementById('search-input').addEventListener('input', doSearch);
+const ns = document.getElementById('navbar-search');
+if (ns) ns.addEventListener('input', () => { document.getElementById('search-input').value = ns.value; doSearch(); });
 document.addEventListener('keydown', (e) => {
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {

@@ -64,6 +64,8 @@ BelajarLagi/
 └── run.bat
 ```
 
+> **UI:** antarmuka memakai tema **Vuexy** (vertical-menu layout). CSS/JS tema dimuat langsung dari URL S3 (`https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/...`) di `frontend/index.html`; logika SPA (router, halaman, aksi) tetap di `frontend/js/app.js` dan butuh koneksi internet untuk memuat asset tema.
+
 ## How learning works
 
 Setiap lesson membawa kamu melalui: Objective → Theory → Analogy → Example → Code → Explanation → Common Mistakes → Manual Exercises → Challenge → Reflection → Checklist.

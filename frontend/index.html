@@ -1,46 +1,172 @@
 <!DOCTYPE html>
-<html lang="id" data-theme="light">
+<html lang="id" data-textdirection="ltr" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 <title>Belajar Lagi</title>
+<link rel="shortcut icon" type="image/x-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+
+<!-- BEGIN: Vendor CSS -->
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/vendors/css/vendors.min.css">
+<!-- END: Vendor CSS -->
+
+<!-- BEGIN: Theme CSS -->
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/bootstrap.css">
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/bootstrap-extended.css">
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/colors.css">
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/components.css">
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/themes/dark-layout.css">
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/themes/bordered-layout.css">
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/themes/semi-dark-layout.css">
+<!-- END: Theme CSS -->
+
+<!-- BEGIN: Page CSS -->
+<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/core/menu/menu-types/vertical-menu.css">
+<!-- END: Page CSS -->
+
+<!-- BEGIN: Custom CSS -->
 <link rel="stylesheet" href="/static/style.css">
+<!-- END: Custom CSS -->
 </head>
-<body>
-<div id="app">
-  <aside id="sidebar">
-    <div class="brand">BELAJAR LAGI</div>
-    <nav>
-      <a href="#/dashboard" data-nav>Dashboard</a>
-      <a href="#/roadmap" data-nav>Roadmap</a>
-      <a href="#/lessons/day01" data-nav>Learn</a>
-      <a href="#/challenges" data-nav>Challenges</a>
-      <a href="#/playground" data-nav>Playground</a>
-      <a href="#/projects" data-nav>Projects</a>
-      <a href="#/notes" data-nav>Notes</a>
-      <a href="#/mistakes" data-nav>Mistakes</a>
-      <a href="#/progress" data-nav>Progress</a>
-      <a href="#/weekly" data-nav>Weekly Review</a>
-      <a href="#/bookmarks" data-nav>Settings</a>
-    </nav>
-    <div class="sidebar-foot">
-      <button id="theme-toggle">Dark / Light</button>
-      <button id="search-btn">Search (Ctrl+K)</button>
+
+<body class="vertical-layout vertical-menu-modern  navbar-floating footer-static  " data-open="click" data-menu="vertical-menu-modern" data-col="">
+
+<!-- BEGIN: Header -->
+<nav class="header-navbar navbar navbar-expand-lg align-items-center floating-nav navbar-light navbar-shadow container-xxl">
+  <div class="navbar-container d-flex content">
+    <div class="bookmark-wrapper d-flex align-items-center">
+      <ul class="nav navbar-nav d-xl-none">
+        <li class="nav-item"><a class="nav-link menu-toggle" href="javascript:void(0);"><i class="ficon" data-feather="menu"></i></a></li>
+      </ul>
+      <ul class="nav navbar-nav d-none d-xl-flex">
+        <li class="nav-item"><a class="nav-link" href="#/dashboard"><i class="ficon" data-feather="home"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="#/roadmap"><i class="ficon" data-feather="map"></i></a></li>
+        <li class="nav-item"><a class="nav-link" href="#/challenges"><i class="ficon" data-feather="code"></i></a></li>
+      </ul>
     </div>
-  </aside>
+    <ul class="nav navbar-nav align-items-center ms-auto">
+      <li class="nav-item d-none d-lg-block"><a class="nav-link" href="javascript:void(0);" id="theme-toggle" title="Ganti tema"><i class="ficon" data-feather="moon"></i></a></li>
+      <li class="nav-item nav-search"><a class="nav-link nav-link-search" href="javascript:void(0);" id="search-btn"><i class="ficon" data-feather="search"></i></a>
+        <div class="search-input">
+          <div class="search-input-icon"><i data-feather="search"></i></div>
+          <input class="form-control input" type="text" placeholder="Cari materi (Ctrl+K)..." tabindex="-1" data-search="search" id="navbar-search">
+          <div class="search-input-close"><i data-feather="x"></i></div>
+        </div>
+      </li>
+      <li class="nav-item dropdown dropdown-user">
+        <a class="nav-link dropdown-toggle dropdown-user-link" href="javascript:void(0);" id="dropdown-user" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <div class="user-nav d-sm-flex d-none"><span class="user-name fw-bolder">Belajar</span><span class="user-status">Lagi</span></div>
+          <span class="avatar"><span class="avatar-content bg-primary">BL</span></span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-end">
+          <a class="dropdown-item" href="#/progress"><i class="me-50" data-feather="bar-chart-2"></i> Progress</a>
+          <a class="dropdown-item" href="#/settings"><i class="me-50" data-feather="settings"></i> Settings</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#/dashboard"><i class="me-50" data-feather="power"></i> Dashboard</a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>
+<!-- END: Header -->
 
-  <main id="content">
-    <!-- rendered by JS -->
-  </main>
+<!-- BEGIN: Main Menu -->
+<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true" id="sidebar">
+  <div class="navbar-header">
+    <ul class="nav navbar-nav flex-row">
+      <li class="nav-item me-auto">
+        <a class="navbar-brand" href="#/dashboard">
+          <span class="brand-logo">
+            <svg viewbox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path class="text-primary" d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+          </span>
+          <h2 class="brand-text">Belajar Lagi</h2>
+        </a>
+      </li>
+      <li class="nav-item nav-toggle">
+        <a class="nav-link modern-nav-toggle pe-0" data-bs-toggle="collapse" href="javascript:void(0);">
+          <i class="d-block d-xl-none text-primary toggle-icon font-medium-4" data-feather="x"></i>
+          <i class="d-none d-xl-block collapse-toggle-icon font-medium-4 text-primary" data-feather="disc" data-ticon="disc"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="shadow-bottom"></div>
+  <div class="main-menu-content">
+    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
+      <li class=" navigation-header"><span data-i18n="Belajar">Belajar</span></li>
+      <li class=" nav-item active"><a class="d-flex align-items-center" href="#/dashboard" data-nav><i data-feather="home"></i><span class="menu-title text-truncate" data-i18n="Dashboard">Dashboard</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/lessons/day01" data-nav><i data-feather="book-open"></i><span class="menu-title text-truncate" data-i18n="Learn">Belajar Harian</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/roadmap" data-nav><i data-feather="map"></i><span class="menu-title text-truncate" data-i18n="Roadmap">Roadmap</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/challenges" data-nav><i data-feather="code"></i><span class="menu-title text-truncate" data-i18n="Challenges">Challenges</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/playground" data-nav><i data-feather="terminal"></i><span class="menu-title text-truncate" data-i18n="Playground">Playground</span></a></li>
+
+      <li class=" navigation-header"><span data-i18n="Berkarya">Berkarya</span></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/projects" data-nav><i data-feather="layout"></i><span class="menu-title text-truncate" data-i18n="Projects">Projects</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/notes" data-nav><i data-feather="file-text"></i><span class="menu-title text-truncate" data-i18n="Notes">Notes</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/mistakes" data-nav><i data-feather="alert-triangle"></i><span class="menu-title text-truncate" data-i18n="Mistakes">Mistake Journal</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/progress" data-nav><i data-feather="bar-chart-2"></i><span class="menu-title text-truncate" data-i18n="Progress">Progress</span></a></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/weekly" data-nav><i data-feather="calendar"></i><span class="menu-title text-truncate" data-i18n="Weekly">Weekly Review</span></a></li>
+
+      <li class=" navigation-header"><span data-i18n="Sistem">Sistem</span></li>
+      <li class=" nav-item"><a class="d-flex align-items-center" href="#/settings" data-nav><i data-feather="settings"></i><span class="menu-title text-truncate" data-i18n="Settings">Settings</span></a></li>
+    </ul>
+  </div>
 </div>
+<!-- END: Main Menu -->
 
-<div id="search-modal" class="modal hidden">
-  <div class="modal-box">
-    <input id="search-input" type="text" placeholder="Cari materi... (misal: python dictionary, SQL JOIN)">
-    <ul id="search-results"></ul>
+<!-- BEGIN: Content -->
+<div class="app-content content">
+  <div class="content-wrapper container-xxl p-0">
+    <div class="content-header row"><div class="content-header-left col-12 col-md-9 mb-2">
+      <h2 class="content-header-title float-start mb-0" id="page-title">Dashboard</h2>
+      <div class="breadcrumb-wrapper"></div>
+    </div></div>
+    <div class="content-body">
+      <div id="content"><!-- rendered by JS --></div>
+    </div>
+  </div>
+</div>
+<!-- END: Content -->
+
+<!-- BEGIN: Footer -->
+<footer class="footer footer-static footer-light">
+  <p class="clearfix mb-0"><span class="float-md-start d-block d-md-inline-block mt-25">BELAJAR LAGI · TRY FIRST, THINK BEFORE ASKING AI</span><span class="float-md-end d-none d-md-block">Dibuat untuk belajar mandiri</span></p>
+</footer>
+<!-- END: Footer -->
+
+<button class="btn btn-primary btn-icon scroll-top" type="button" id="scroll-top"><i data-feather="arrow-up"></i></button>
+
+<!-- Search Modal -->
+<div id="search-modal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Cari materi</h5>
+        <button type="button" class="btn-close" onclick="closeSearch()"></button></div>
+      <div class="modal-body">
+        <input id="search-input" class="form-control mb-1" type="text" placeholder="Cari materi... (misal: python dictionary, SQL JOIN)">
+        <ul id="search-results" class="list-group"></ul>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- BEGIN: Vendor JS -->
+<script src="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/vendors/js/vendors.min.js"></script>
+<!-- END: Vendor JS -->
+
+<!-- BEGIN: Theme + Menu JS -->
+<script src="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/js/core/app-menu.js"></script>
+<script src="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/js/core/app.js"></script>
+<!-- END: Theme + Menu JS -->
+
+<!-- Belajar Lagi SPA -->
 <script src="/js/app.js"></script>
 </body>
 </html>
