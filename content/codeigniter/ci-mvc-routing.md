@@ -120,7 +120,7 @@ class MahasiswaController extends Controller
     public function index()
     {
         $data = [
-            'nama' => 'Amir',
+            'nama' => 'John',
             'jurusan' => 'S.Kom',
         ];
         return view('mahasiswa/index', $data);

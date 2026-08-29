@@ -65,14 +65,14 @@ in_array(3, $nums);   // true
 ```php
 <?php
 $users = [
-    ["name" => "Amir", "role" => "admin"],
+    ["name" => "John", "role" => "admin"],
     ["name" => "Budi", "role" => "user"],
 ];
 
 $admins = array_filter($users, fn($u) => $u["role"] === "admin");
 $names  = array_map(fn($u) => $u["name"], $users);
 
-print_r($names);   // ["Amir","Budi"]
+print_r($names);   // ["John","Budi"]
 ?>
 ```
 
@@ -128,7 +128,7 @@ Hitung total belanja `[["item"=>"A","price"=>10000], ...]`.
 Sort array of assoc by key `name` (usort).
 
 ### Exercise 5
-Gabung daftar nama menjadi string "Amir, Budi".
+Gabung daftar nama menjadi string "John, Budi".
 
 ---
 
@@ -180,8 +180,8 @@ Exercise 5
 
 ```php
 <?php
-$names = ["Amir", "Budi"];
-echo implode(", ", $names);  // "Amir, Budi"
+$names = ["John", "Budi"];
+echo implode(", ", $names);  // "John, Budi"
 ?>
 ```
 

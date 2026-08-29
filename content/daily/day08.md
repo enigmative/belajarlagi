@@ -16,11 +16,11 @@
 ```python
 user = {
     "id": 1,
-    "name": "Amir",
+    "name": "John",
     "email": "amir@example.com"
 }
 
-print(user["name"])           # Amir
+print(user["name"])           # John
 print(user.get("phone"))      # None (tidak error)
 print(user.get("phone", "N/A"))  # "N/A" (default)
 user["age"] = 23              # tambah / ubah
@@ -47,11 +47,11 @@ for key, value in user.items():  # pasangan
 
 ```python
 # LIST: O(n), harus cari satu per satu
-names = ["Amir", "Budi", "Cika"]
+names = ["John", "Budi", "Cika"]
 # butuh mencari posisi "Budi"
 
 # DICT: O(1) langsung ke key
-ages = {"Amir": 23, "Budi": 24}
+ages = {"John": 23, "Budi": 24}
 print(ages["Budi"])           # 24 langsung
 ```
 
@@ -81,7 +81,7 @@ print(count_chars("aabbabc"))  # {'a':3,'b':3,'c':1}
 
 ```python
 users = {
-    1: {"name": "Amir", "skills": ["Python", "PHP"]},
+    1: {"name": "John", "skills": ["Python", "PHP"]},
     2: {"name": "Budi", "skills": ["Java"]},
 }
 print(users[1]["skills"][0])   # Python
@@ -181,11 +181,11 @@ Buat function `most_frequent(text)` mengembalikan karakter yang paling sering mu
 **Exercise 2**
 
 ```python
-names = ["Amir", "Budi", "Amir", "Cika", "Budi", "Budi"]
+names = ["John", "Budi", "John", "Cika", "Budi", "Budi"]
 freq = {}
 for n in names:
     freq[n] = freq.get(n, 0) + 1
-print(freq)   # {'Amir':2,'Budi':3,'Cika':1}
+print(freq)   # {'John':2,'Budi':3,'Cika':1}
 ```
 
 **Exercise 4**

@@ -47,7 +47,7 @@ chown www-data:www-data app/
 
 ```bash
 curl -I https://example.com       # header saja
-curl -X POST -d "name=Amir" http://localhost:8000/api/notes
+curl -X POST -d "name=John" http://localhost:8000/api/notes
 wget https://example.com/file.zip
 ssh user@server "ls /var/www"
 ```

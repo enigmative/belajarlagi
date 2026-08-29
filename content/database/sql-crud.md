@@ -18,7 +18,7 @@ users
 ┌────┬───────┬─────────┬───────┐
 │ id │ name  │ email   │ role  │
 ├────┼───────┼─────────┼───────┤
-│ 1  │ Amir  │ ...     │ admin │
+│ 1  │ John  │ ...     │ admin │
 │ 2  │ Budi  │ ...     │ user  │
 └────┴───────┴─────────┴───────┘
 ```
@@ -38,7 +38,7 @@ CREATE TABLE users (
 
 ```sql
 -- CREATE
-INSERT INTO users (name, email, role) VALUES ('Amir', 'amir@mail.com', 'admin');
+INSERT INTO users (name, email, role) VALUES ('John', 'amir@mail.com', 'admin');
 
 -- READ
 SELECT * FROM users;

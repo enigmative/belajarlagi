@@ -23,7 +23,7 @@ php file.php            # jalankan script
 
 ```php
 <?php
-$name = "Amir";        // string
+$name = "John";        // string
 $age = 23;             // int
 $height = 170.5;       // float
 $isDev = true;         // bool
@@ -42,7 +42,7 @@ $list[] = 4;                     // append
 echo count($list);               // 4
 
 $user = [
-    "name" => "Amir",
+    "name" => "John",
     "role" => "admin"
 ];
 echo $user["name"];
@@ -84,7 +84,7 @@ PHP seperti Python untuk web tapi dengan `$` di depan tiap variable dan array ya
 ```php
 <?php
 $users = [
-    ["name" => "Amir", "role" => "admin"],
+    ["name" => "John", "role" => "admin"],
     ["name" => "Budi", "role" => "user"],
 ];
 

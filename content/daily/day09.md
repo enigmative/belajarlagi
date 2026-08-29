@@ -183,7 +183,7 @@ print(len(set(nums)))   # 4
 **Exercise 3**
 
 ```python
-a = {"Amir", "Budi", "Cika"}
+a = {"John", "Budi", "Cika"}
 b = {"Budi", "Dewi"}
 print(a & b)   # {'Budi'}
 ```

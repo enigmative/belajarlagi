@@ -90,13 +90,13 @@ FROM courses c
 LEFT JOIN course_student cs ON cs.course_id = c.id
 GROUP BY c.id;
 
--- semua order milik Amir dengan produknya
+-- semua order milik John dengan produknya
 SELECT u.name, o.id, p.title
 FROM users u
 JOIN orders o ON o.user_id = u.id
 JOIN order_items oi ON oi.order_id = o.id
 JOIN products p ON p.id = oi.product_id
-WHERE u.name = 'Amir';
+WHERE u.name = 'John';
 ```
 
 ---

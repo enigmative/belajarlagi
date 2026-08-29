@@ -34,10 +34,10 @@ client = TestClient(app)
 
 def test_create_employee():
     r = client.post("/api/employees", json={
-        "name": "Amir", "role": "Backend", "salary": 8000000
+        "name": "John", "role": "Backend", "salary": 8000000
     })
     assert r.status_code == 201
-    assert r.json()["name"] == "Amir"
+    assert r.json()["name"] == "John"
 ```
 
 ---

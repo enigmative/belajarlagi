@@ -38,7 +38,7 @@ Namafile harus match namespace.
 require __DIR__ . '/vendor/autoload.php';
 
 use App\Models\User;   // → src/Models/User.php
-$u = new User("Amir");
+$u = new User("John");
 ?>
 ```
 

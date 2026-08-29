@@ -22,7 +22,7 @@ redis-cli
 ```
 
 ```text
-SET cache:user:1 "Amir"
+SET cache:user:1 "John"
 GET cache:user:1
 EXPIRE cache:user:1 3600      # TTL 1 jam
 DEL cache:user:1
@@ -61,8 +61,8 @@ Redis = "catatan tempel instan" di RAM dekat tangan — super cepat dibaca/ditul
 import redis
 r = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
-r.set("cache:profile:1", "Amir", ex=600)
-print(r.get("cache:profile:1"))   # "Amir"
+r.set("cache:profile:1", "John", ex=600)
+print(r.get("cache:profile:1"))   # "John"
 ```
 
 ```php
@@ -177,7 +177,7 @@ Exercise 1
 ```bash
 docker run -d --name redis -p 6379:6379 redis:7-alpine
 redis-cli
-SET cache:user:1 "Amir"
+SET cache:user:1 "John"
 EXPIRE cache:user:1 60
 GET cache:user:1
 ```

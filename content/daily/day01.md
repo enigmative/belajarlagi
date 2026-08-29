@@ -19,11 +19,11 @@ Setelah menyelesaikan Day 01, kamu harus mampu:
 Variable adalah **nama untuk sebuah nilai** di dalam memori. Kamu memberi label pada sebuah data supaya bisa dipakai ulang.
 
 ```python
-name = "Amir"
+name = "John"
 age = 23
 ```
 
-Di sini `name` menyimpan string `"Amir"`, `age` menyimpan integer `23`.
+Di sini `name` menyimpan string `"John"`, `age` menyimpan integer `23`.
 
 ### Dynamic typing
 
@@ -70,7 +70,7 @@ Bayangkan **variable seperti kotak berlabel** di atas meja.
 ### Example 1 — Variable dasar
 
 ```python
-name = "Amir"
+name = "John"
 age = 23
 height = 170.5
 is_developer = True
@@ -85,7 +85,7 @@ print(is_developer)
 
 ```python
 user = {
-    "name": "Amir",
+    "name": "John",
     "age": 23,
     "skills": ["Python", "PHP"]
 }
@@ -108,7 +108,7 @@ print(unique)
 Coba jalankan kode berikut di Playground, lalu ubah nilainya:
 
 ```python
-name = "Amir"
+name = "John"
 age = 23
 
 print("Nama:", name)
@@ -217,7 +217,7 @@ Jawab dalam kalimatmu sendiri (simpan di halaman Notes):
 **Exercise 1**
 
 ```python
-my_name = "Amir"
+my_name = "John"
 my_age = 23
 my_city = "Jakarta"
 print(my_name, my_age, my_city)
@@ -241,7 +241,7 @@ print(len(fruits))
 **Exercise 4**
 
 ```python
-person = {"name": "Amir", "job": "Developer", "salary": 8000000}
+person = {"name": "John", "job": "Developer", "salary": 8000000}
 print(person["name"], person["salary"])
 ```
 

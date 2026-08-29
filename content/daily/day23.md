@@ -54,7 +54,7 @@ import pytest
 
 @pytest.fixture
 def user():
-    return {"name": "Amir", "age": 23}
+    return {"name": "John", "age": 23}
 
 def test_user_age(user):
     assert user["age"] == 23

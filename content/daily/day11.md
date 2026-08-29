@@ -59,7 +59,7 @@ with open("out.txt", "w", encoding="utf-8") as f:
 ```python
 import json
 
-data = {"name": "Amir", "age": 23}
+data = {"name": "John", "age": 23}
 
 # tulis
 with open("user.json", "w", encoding="utf-8") as f:
@@ -92,7 +92,7 @@ File seperti **catatan fisik di laci**.
 import json
 
 employees = [
-    {"name": "Amir", "salary": 8000000},
+    {"name": "John", "salary": 8000000},
     {"name": "Budi", "salary": 7000000},
 ]
 

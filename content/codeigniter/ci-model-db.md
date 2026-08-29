@@ -31,7 +31,7 @@ class UserModel extends Model
 
 ```php
 $m = new UserModel();
-$m->insert(['name' => 'Amir', 'email' => 'a@b.co', 'role' => 'admin']);
+$m->insert(['name' => 'John', 'email' => 'a@b.co', 'role' => 'admin']);
 $user = $m->find(1);            // by PK
 $all  = $m->findAll();          // semua
 $admin = $m->where('role', 'admin')->findAll();

@@ -123,7 +123,7 @@ pip install requests
 Pelajari:
 
 ```python
-name = "Amir"
+name = "John"
 age = 23
 height = 170.5
 is_developer = True
@@ -159,7 +159,7 @@ Contoh:
 
 ```python
 user = {
-    "name": "Amir",
+    "name": "John",
     "age": 23,
     "skills": ["Python", "PHP"]
 }
@@ -368,7 +368,7 @@ Ini **sangat penting untuk backend developer**.
 ```python
 user = {
     "id": 1,
-    "name": "Amir",
+    "name": "John",
     "email": "amir@example.com"
 }
 ```

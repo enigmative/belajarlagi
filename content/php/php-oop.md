@@ -29,7 +29,7 @@ class User {
     }
 }
 
-$u = new User("Amir", "rahasia");
+$u = new User("John", "rahasia");
 echo $u->greet();
 ?>
 ```
@@ -119,7 +119,7 @@ class Employee {
 ```php
 <?php
 use App\Models\Employee;
-$emp = new Employee(1, "Amir");
+$emp = new Employee(1, "John");
 echo $emp->name;
 ?>
 ```
@@ -141,7 +141,7 @@ class FileStorage implements Storage {
 }
 
 $storage = new FileStorage();
-$storage->save("user", "Amir");
+$storage->save("user", "John");
 ?>
 ```
 

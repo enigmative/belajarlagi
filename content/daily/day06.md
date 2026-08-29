@@ -48,9 +48,9 @@ print(" ".join(words))               # "satu dua tiga"
 ### f-string
 
 ```python
-name = "Amir"
+name = "John"
 age = 23
-print(f"Nama: {name}, Umur: {age}")   # Nama: Amir, Umur: 23
+print(f"Nama: {name}, Umur: {age}")   # Nama: John, Umur: 23
 ```
 
 ---
@@ -132,7 +132,7 @@ Hapus karakter `"x"` dari `"xboxx"`.
 
 ### Exercise 5
 
-Ambil inisial nama: `"Amir Mabruri"` → `"AM"`.
+Ambil inisial nama: `"John Doe"` → `"JD"`.
 
 ---
 
@@ -198,9 +198,9 @@ print("xboxx".replace("x", ""))   # "bo"
 **Exercise 5**
 
 ```python
-name = "Amir Mabruri"
+name = "John Doe"
 parts = name.split()
-print(parts[0][0] + parts[1][0])   # "AM"
+print(parts[0][0] + parts[1][0])   # "JD"
 ```
 
 </details>

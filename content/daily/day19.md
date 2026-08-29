@@ -67,8 +67,8 @@ def contains_fast(seen, target):  # O(1) via set
     return target in seen
 
 # dict lookup: O(1)
-scores = {"Amir": 90}
-print(scores["Amir"])            # 90
+scores = {"John": 90}
+print(scores["John"])            # 90
 ```
 
 ---

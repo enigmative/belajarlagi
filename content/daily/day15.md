@@ -85,8 +85,8 @@ class User:
     email: str = ""
     skills: List[str] = field(default_factory=list)
 
-u = User("Amir", 23)
-print(u.name, u.age)      # Amir 23
+u = User("John", 23)
+print(u.name, u.age)      # John 23
 print(u)                  # repr otomatis rapi
 ```
 

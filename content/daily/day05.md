@@ -33,8 +33,8 @@ print(total)   # 45000
 def greet(name, greeting="Halo"):
     return f"{greeting}, {name}"
 
-print(greet("Amir"))              # Halo, Amir
-print(greet("Amir", "Selamat pagi"))  # Selamat pagi, Amir
+print(greet("John"))              # Halo, John
+print(greet("John", "Selamat pagi"))  # Selamat pagi, John
 ```
 
 ### Keyword argument
@@ -43,7 +43,7 @@ print(greet("Amir", "Selamat pagi"))  # Selamat pagi, Amir
 def describe(name, age, job):
     print(name, age, job)
 
-describe(age=23, job="Dev", name="Amir")
+describe(age=23, job="Dev", name="John")
 ```
 
 Urutan tidak penting jika memakai nama parameter.

@@ -15,7 +15,7 @@
 ### Variable & tipe
 
 ```javascript
-let name = "Amir";        // bisa diubah
+let name = "John";        // bisa diubah
 const age = 23;           // tidak boleh diubah (reassign)
 let height = 170.5;
 let isDev = true;
@@ -39,7 +39,7 @@ console.log(nums.includes(3));         // true
 
 ```javascript
 const user = {
-    name: "Amir",
+    name: "John",
     role: "admin",
     greet() {
         return `Halo ${this.name}`;
@@ -77,13 +77,13 @@ function sumAll(...args) { return args.reduce((a, b) => a + b, 0); }
 
 ```javascript
 const employees = [
-    { name: "Amir", salary: 8000000 },
+    { name: "John", salary: 8000000 },
     { name: "Budi", salary: 7000000 },
 ];
 
 const totalGaji = employees.reduce((acc, e) => acc + e.salary, 0);
 const nama = employees.map(e => e.name);
-console.log(totalGaji, nama);   // 15000000 ["Amir","Budi"]
+console.log(totalGaji, nama);   // 15000000 ["John","Budi"]
 ```
 
 ---
@@ -94,7 +94,7 @@ console.log(totalGaji, nama);   // 15000000 ["Amir","Budi"]
 function highestSalary(list) {
     return list.reduce((best, e) => (e.salary > best.salary ? e : best), list[0]);
 }
-console.log(highestSalary(employees).name);  // "Amir"
+console.log(highestSalary(employees).name);  // "John"
 ```
 
 ---

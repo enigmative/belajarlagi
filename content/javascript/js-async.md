@@ -49,8 +49,8 @@ await wait(1000);
 ### JSON
 
 ```javascript
-const u = JSON.parse('{"name":"Amir"}');      // string → object
-const s = JSON.stringify({ name: 'Amir' });   // object → string
+const u = JSON.parse('{"name":"John"}');      // string → object
+const s = JSON.stringify({ name: 'John' });   // object → string
 ```
 
 ---

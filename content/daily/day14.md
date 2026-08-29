@@ -139,7 +139,7 @@ class Contract(Employee):
     def salary(self):
         return self.base * 0.9
 
-emps = [Permanent("Amir", 8000000), Contract("Budi", 8000000)]
+emps = [Permanent("John", 8000000), Contract("Budi", 8000000)]
 for e in emps:
     print(e.name, "->", e.salary())
 ```

@@ -23,9 +23,9 @@ class User:
     def greet(self):
         return f"Hello {self.name}"
 
-u = User("Amir", 23)
-print(u.name)       # Amir
-print(u.greet())    # Hello Amir
+u = User("John", 23)
+print(u.name)       # John
+print(u.greet())    # Hello John
 ```
 
 - `class` mendefinisikan *template*.
@@ -124,7 +124,7 @@ class BankAccount:
     def balance(self):
         return self._balance
 
-acc = BankAccount("Amir", 100000)
+acc = BankAccount("John", 100000)
 acc.deposit(50000)
 print(acc.balance)     # 150000
 ```
