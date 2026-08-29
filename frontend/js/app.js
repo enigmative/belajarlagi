@@ -84,164 +84,256 @@ async function api(path, method = 'GET', body) {
 }
 
 function barHtml(pct, ok) {
-  return `<div class="bar ${ok ? 'ok' : ''}"><div style="width:${Math.max(0, Math.min(100, pct))}%"></div></div><div class="ghost">${Math.round(pct)}%</div>`;
+  const w = Math.max(0, Math.min(100, pct));
+  const cls = ok ? 'bg-success' : 'bg-primary';
+  return `<div class="d-flex justify-content-between mb-50"><span class="text-muted small"></span><span class="small fw-bolder">${Math.round(w)}%</span></div>
+    <div class="progress" style="height:8px"><div class="progress-bar ${cls}" style="width:${w}%"></div></div>`;
 }
+
+function statCard(icon, color, label, value) {
+  return `<div class="col-xl-2 col-md-4 col-sm-6 col-12">
+    <div class="card card-statistics">
+      <div class="card-body d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-muted text-capitalize font-small-4 mb-25">${label}</div>
+          <h4 class="fw-bolder mb-0">${value}</h4>
+        </div>
+        <div class="avatar bg-light-${color} p-50 m-0"><div class="avatar-content"><i data-feather="${icon}" class="font-medium-3"></i></div></div>
+      </div>
+    </div></div>`;
+}
+
+function pageCard(title, bodyHtml, opts) {
+  const h = title ? `<div class="card-header"><h4 class="card-title">${title}</h4></div>` : '';
+  return `<div class="card">${h}<div class="card-body">${bodyHtml}</div></div>`;
+}
+
+function pageHeading(t) { return `<h5 class="mb-2 text-primary font-medium-5">${t}</h5>`; }
 
 /* ================= Pages ================= */
 
 async function pageDashboard() {
   const d = await api('/api/dashboard');
   const btn = d.current_lesson
-    ? `<a class="act" href="#/lessons/${esc(d.current_lesson.slug)}">Continue — ${esc(d.current_lesson.title)}</a>`
-    : `<a class="act" href="#/roadmap">Mulai dari Roadmap</a>`;
+    ? `<a class="btn btn-primary me-50" href="#/lessons/${esc(d.current_lesson.slug)}"><i data-feather="arrow-right"></i> Continue — ${esc(d.current_lesson.title)}</a>`
+    : `<a class="btn btn-primary me-50" href="#/roadmap">Mulai dari Roadmap</a>`;
   return `
-    <h1>BELAJAR LAGI</h1>
-    <h2>Overall Progress</h2>${barHtml(d.overall_pct)}
-    <div class="cards">
-      <div class="card"><div class="label">Current Phase</div><div class="value">${esc(d.current_phase || '—')}</div></div>
-      <div class="card"><div class="label">Lessons</div><div class="value">${d.lessons_completed}/${d.lessons_total}</div></div>
-      <div class="card"><div class="label">Challenges Passed</div><div class="value">${d.challenges_passed}/${d.challenges_total}</div></div>
-      <div class="card"><div class="label">Streak</div><div class="value">${d.streak} hari</div></div>
-      <div class="card"><div class="label">Learning Time</div><div class="value">${esc(d.learning_time)}</div></div>
+    ${pageCard('Overall Progress', barHtml(d.overall_pct, d.overall_pct >= 100))}
+    <div class="row match-height">
+      ${statCard('layers', 'primary', 'Current Phase', esc(d.current_phase || '—'))}
+      ${statCard('book', 'success', 'Lessons', `${d.lessons_completed}/${d.lessons_total}`)}
+      ${statCard('code', 'warning', 'Challenges', `${d.challenges_passed}/${d.challenges_total}`)}
+      ${statCard('trending-up', 'danger', 'Streak', `${d.streak} hari`)}
+      ${statCard('clock', 'info', 'Learning Time', esc(d.learning_time))}
     </div>
-    <div class="panel">
-      <h3>Continue Learning</h3>
-      ${d.current_lesson ? `<p>${esc(d.current_lesson.title)}</p>` : '<p class="ghost">Belum ada lesson aktif.</p>'}
-      <div class="row">${btn}</div>
-    </div>
-    <div class="panel"><h3>TRY FIRST · THINK BEFORE ASKING AI</h3>
-      <p class="ghost">Gunakan AI untuk belajar, bukan untuk menghindar dari berpikir.</p></div>`;
+    ${pageCard('Continue Learning',
+      (d.current_lesson
+        ? `<p class="card-text mb-1">Lanjutkan lesson terakhir kamu: <strong>${esc(d.current_lesson.title)}</strong></p>`
+        : '<p class="card-text mb-1 text-muted">Belum ada lesson aktif.</p>') + `<div class="d-flex">${btn}</div>`)}
+    ${pageCard('TRY FIRST · THINK BEFORE ASKING AI',
+      '<p class="mb-0 text-muted">Gunakan AI untuk belajar, bukan untuk menghindar dari berpikir.</p>')}`;
 }
 
 async function pageRoadmap() {
   const tree = await api('/api/roadmap');
-  let html = '<h1>Roadmap</h1>';
-  for (const g of tree) {
-    html += `<h3>${esc(g.name)}</h3><div class="panel">`;
-    for (const t of g.topics) {
-      const icon = t.status === 'completed' ? '<span class="st done">✓</span>'
-        : t.status === 'current' ? '<span class="st cur">→</span>' : '<span class="st none">○</span>';
-      const link = t.lesson ? `<a href="#/lessons/${esc(t.lesson)}">${esc(t.title)}</a>` : `<span class="ghost">${esc(t.title)}</span>`;
-      html += `<div class="topic">${icon}<div>${link}</div></div>`;
-    }
-    html += '</div>';
-  }
-  return html;
+  const cards = tree.map(g => {
+    const rows = g.topics.map(t => {
+      const dot = t.status === 'completed'
+        ? '<span class="badge bg-light-success rounded-pill">✓</span>'
+        : t.status === 'current' ? '<span class="badge bg-light-primary rounded-pill">→</span>'
+        : '<span class="badge bg-light-secondary rounded-pill">○</span>';
+      const link = t.lesson
+        ? `<a href="#/lessons/${esc(t.lesson)}" class="text-body">${esc(t.title)}</a>`
+        : `<span class="text-muted">${esc(t.title)}</span>`;
+      const st = t.status === 'completed' ? '<span class="text-success">Selesai</span>'
+        : t.status === 'current' ? '<span class="text-primary">Sedang dipelajari</span>'
+        : '<span class="text-muted">Belum</span>';
+      return `<div class="d-flex align-items-center py-50 border-bottom">
+        <span class="me-1">${dot}</span><span class="flex-grow-1">${link}</span><small class="text-muted">${st}</small></div>`;
+    }).join('');
+    return `<div class="card"><div class="card-header"><h5 class="card-title mb-0">${esc(g.name)}</h5></div>
+      <div class="card-body py-0">${rows}</div></div>`;
+  }).join('');
+  return pageHeading('Roadmap') + cards;
 }
 
 async function pageLesson(slug) {
   slug = slug || 'day01';
   const l = await api(`/api/lessons/${slug}`);
-  let nav = '<div class="row">';
-  if (l.prev) nav += `<a href="#/lessons/${esc(l.prev.slug)}">← Previous</a>`;
-  if (l.next) nav += `<a href="#/lessons/${esc(l.next.slug)}">Next →</a>`;
-  nav += '</div>';
   const btn = l.completed
-    ? '<p class="ghost">✓ Selesai</p>'
-    : `<button class="act" onclick="actComplete('${esc(slug)}')">Mark as Complete</button>`;
-  return `<h1>${esc(l.title)}</h1><div class="panel">${renderMarkdown(l.markdown)}</div>
-    ${nav}<div style="height:14px"></div>${btn}`;
+    ? '<span class="badge bg-light-success"><i data-feather="check"></i> Selesai</span>'
+    : `<button class="btn btn-success" onclick="actComplete('${esc(slug)}')"><i data-feather="check"></i> Mark as Complete</button>`;
+  const pv = l.prev ? `<a class="btn btn-outline-primary me-50" href="#/lessons/${esc(l.prev.slug)}"><i data-feather="arrow-left"></i> Previous</a>` : '';
+  const nx = l.next ? `<a class="btn btn-outline-primary" href="#/lessons/${esc(l.next.slug)}">Next <i data-feather="arrow-right"></i></a>` : '';
+  return `${pageHeading(esc(l.title))}
+    <div class="card"><div class="card-body lesson-markdown">${renderMarkdown(l.markdown)}</div></div>
+    <div class="d-flex align-items-center justify-content-between flex-wrap">
+      <div>${pv ? pv + ' ' : ''}${nx}</div>
+      <div>${btn}</div>
+    </div>`;
 }
 
 async function pageChallenges() {
   const list = await api('/api/challenges');
-  return `<h1>Challenges</h1>
-    <div class="ghost">Solusi tidak ditampilkan sebelum kamu mencoba sendiri.</div>
-    ${list.map(c => `
-      <div class="challenge"><strong>${esc(c.title)}</strong>
-        <span class="badge">${esc(c.difficulty)}</span><span class="badge">${esc(c.topic || '')}</span>
-        <p class="ghost">Attempts: ${c.stats.attempts || 0} · Passed: ${c.stats.passed || 0} · Hints: ${c.stats.hints || 0}</p>
-        <a class="act" href="#/challenge/${esc(c.slug)}">Start Challenge</a></div>`).join('') || '<p class="ghost">Belum ada challenge.</p>'}`;
+  const cards = list.map(c => {
+    const color = c.difficulty === 'easy' ? 'success' : c.difficulty === 'medium' ? 'warning' : 'danger';
+    return `<div class="card"><div class="card-body d-flex align-items-center justify-content-between flex-wrap">
+      <div>
+        <h5 class="card-title mb-25">${esc(c.title)}</h5>
+        <div>
+          <span class="badge bg-light-${color}">${esc(c.difficulty)}</span>
+          ${c.topic ? `<span class="badge bg-light-primary">${esc(c.topic)}</span>` : ''}
+          <small class="text-muted d-block mt-25">Attempts: ${c.stats.attempts || 0} · Passed: ${c.stats.passed || 0} · Hints: ${c.stats.hints || 0}</small>
+        </div>
+      </div>
+      <a class="btn btn-primary" href="#/challenge/${esc(c.slug)}">Start Challenge</a>
+    </div></div>`;
+  }).join('');
+  return pageHeading('Challenges') +
+    '<div class="alert alert-primary" role="alert">Solusi tidak ditampilkan sebelum kamu mencoba sendiri.</div>' +
+    (cards || '<p class="text-muted">Belum ada challenge.</p>');
 }
 
 async function pageChallenge(slug) {
   const c = await api(`/api/challenges/${slug}`);
-  return `<h1>${esc(c.title)}</h1>
-    <div class="panel">${renderMarkdown(c.statement)}<p class="ghost">Tulis fungsi bernama <code>solve</code>.</p></div>
-    <div class="row">
-      <button class="act" onclick="actHint('${esc(c.slug)}',1)">Hint 1</button>
-      <button class="act" onclick="actHint('${esc(c.slug)}',2)">Hint 2</button>
-      <span class="ghost">Hints: <span id="hint-count">0</span></span>
+  return `${pageHeading(esc(c.title))}
+    <div class="card"><div class="card-body lesson-markdown">${renderMarkdown(c.statement)}
+      <p class="text-muted mb-0 mt-1">Tulis fungsi bernama <code>solve</code>.</p></div></div>
+    <div class="d-flex align-items-center mb-1">
+      <button class="btn btn-relief-primary me-50" onclick="actHint('${esc(c.slug)}',1)">Hint 1</button>
+      <button class="btn btn-relief-primary me-50" onclick="actHint('${esc(c.slug)}',2)">Hint 2</button>
+      <span class="text-muted">Hints: <span id="hint-count">0</span></span>
     </div>
     <div id="hint-box"></div>
     <input type="hidden" id="hint-acc" value="0">
-    <label>Kode kamu</label>
-    <textarea id="ch-code" rows="12">${esc(c.starter_code)}</textarea>
-    <div class="row"><button class="act" onclick="actSubmit('${esc(c.slug)}')">Run &amp; Test</button></div>
-    <div id="ch-result"></div>
-    <p><a href="#/challenges">← back</a></p>`;
+    <div class="mb-2"><label class="form-label">Kode kamu</label>
+      <textarea id="ch-code" class="form-control" rows="12" style="font-family:ui-monospace,Consolas,monospace">${esc(c.starter_code)}</textarea></div>
+    <div class="d-flex align-items-center"><button class="btn btn-primary" onclick="actSubmit('${esc(c.slug)}')"><i data-feather="play"></i> Run &amp; Test</button>
+      <a class="ms-1 text-muted small" href="#/challenges">← back</a></div>
+    <div id="ch-result" class="mt-1"></div>`;
 }
 
 async function pagePlayground() {
-  return `<h1>Playground — Python</h1>
-    <label>Code</label>
-    <textarea id="pg-code" rows="14">numbers = [1, 2, 3]
+  return `${pageHeading('Playground — Python')}
+    <div class="card"><div class="card-body">
+      <label class="form-label">Code</label>
+      <textarea id="pg-code" class="form-control" rows="14" style="font-family:ui-monospace,Consolas,monospace">numbers = [1, 2, 3]
 print(sum(numbers))</textarea>
-    <div class="row"><button class="act" onclick="actRun()">▶ Run</button><span class="ghost">Ctrl+Enter = run</span></div>
-    <div id="pg-output" class="output">// output</div>`;
+      <div class="d-flex align-items-center mt-1">
+        <button class="btn btn-primary" onclick="actRun()"><i data-feather="play"></i> Run</button>
+        <span class="ms-1 text-muted small">Ctrl+Enter = run</span>
+      </div>
+      <div id="pg-output" class="output mt-1">// output</div>
+    </div></div>`;
 }
 
 async function pageProjects() {
   const list = await api('/api/projects');
-  return '<h1>Projects</h1>' + (list.map(p => `
-    <div class="panel"><h3>${esc(p.name)}</h3>
-      ${barHtml(Math.round(p.done / p.total * 100), p.done === p.total)}
-      <table><tbody>${p.stages.map(s => `
-        <tr><td class="${s.is_done ? 'done-task' : ''}">
-          <input type="checkbox" data-proj="${esc(p.slug)}" data-task="${s.id}" ${s.is_done ? 'checked' : ''} onchange="actToggleTask(this)"> ${esc(s.title)}
-        </td></tr>`).join('')}</tbody></table></div>`).join('') || '<p class="ghost">Tidak ada project.</p>');
+  const cards = list.map(p => {
+    const pct = Math.round(p.done / p.total * 100);
+    const rows = p.stages.map(s => {
+      const cls = s.is_done ? 'done-task' : '';
+      return `<tr><td class="align-middle">
+        <div class="form-check"><input class="form-check-input" type="checkbox" data-proj="${esc(p.slug)}" data-task="${s.id}" ${s.is_done ? 'checked' : ''} onchange="actToggleTask(this)">
+        <label class="form-check-label ${cls}">${esc(s.title)}</label></div></td></tr>`;
+    }).join('');
+    return `<div class="card"><div class="card-header"><h5 class="card-title mb-0">${esc(p.name)}</h5>
+      <small class="text-muted">${p.done}/${p.total}</small></div>
+      <div class="card-body">${barHtml(pct, p.done === p.total)}
+        <div class="table-responsive mt-1"><table class="table table-hover mb-0"><tbody>${rows}</tbody></table></div>
+      </div></div>`;
+  }).join('');
+  return pageHeading('Projects') + (cards || '<p class="text-muted">Tidak ada project.</p>');
 }
 
 async function pageNotes() {
   const list = await api('/api/notes');
-  return `<h1>Notes</h1>
-    <div class="panel"><label>Title</label><input id="n-title" placeholder="cth: Python Dictionary">
-      <label>Content</label><textarea id="n-body" rows="5"></textarea>
-      <div class="row"><button class="act" onclick="actSaveNote()">Simpan</button></div></div>
-    ${list.map(n => `<div class="note-item"><strong>${esc(n.title)}</strong>
-      <button class="del" onclick="actDelNote(${n.id})">hapus</button>
-      <pre style="white-space:pre-wrap">${esc(n.body)}</pre><div class="ghost">${esc(n.kind)} · ${esc(n.created_at)}</div></div>`).join('')}`;
+  const items = list.map(n => `
+    <div class="card"><div class="card-body">
+      <div class="d-flex align-items-center justify-content-between">
+        <h6 class="card-title mb-1">${esc(n.title)}</h6>
+        <button class="btn btn-icon btn-outline-danger btn-sm" onclick="actDelNote(${n.id})"><i data-feather="trash"></i></button>
+      </div>
+      <pre class="mb-0 text-wrap text-muted small whitespace">${esc(n.body)}</pre>
+      <div class="text-muted small mt-50">${esc(n.kind)} · ${esc(n.created_at)}</div>
+    </div></div>`).join('');
+  return `${pageHeading('Notes')}
+    <div class="card"><div class="card-body">
+      <label class="form-label">Title</label>
+      <input id="n-title" class="form-control mb-1" placeholder="cth: Python Dictionary">
+      <label class="form-label">Content</label>
+      <textarea id="n-body" class="form-control mb-1" rows="5"></textarea>
+      <button class="btn btn-primary" onclick="actSaveNote()"><i data-feather="save"></i> Simpan</button>
+    </div></div>
+    ${items}`;
 }
 
 async function pageMistakes() {
   const list = await api('/api/mistakes');
-  return `<h1>Mistake Journal</h1>
-    <div class="panel">
-      <label>Problem</label><input id="m-problem">
-      <label>Why it happened</label><input id="m-cause">
-      <label>What I learned</label><input id="m-lesson">
-      <label>How to prevent it</label><input id="m-prevention">
-      <div class="row"><button class="act" onclick="actSaveMistake()">Simpan</button></div></div>
-    ${list.map(m => `<div class="mistake-item"><strong>${esc(m.problem)}</strong>
-      <button class="del" onclick="actDelMistake(${m.id})">hapus</button>
-      <div><b>Cause:</b> ${esc(m.cause)}</div><div><b>Lesson:</b> ${esc(m.lesson)}</div>
-      <div><b>Prevent:</b> ${esc(m.prevention)}</div><div class="ghost">${esc(m.created_at)}</div></div>`).join('')}`;
+  const items = list.map(m => `
+    <div class="card"><div class="card-body">
+      <div class="d-flex align-items-center justify-content-between">
+        <h6 class="card-title mb-1">${esc(m.problem)}</h6>
+        <button class="btn btn-icon btn-outline-danger btn-sm" onclick="actDelMistake(${m.id})"><i data-feather="trash"></i></button>
+      </div>
+      <div class="small"><span class="text-muted">Cause:</span> ${esc(m.cause)}<br>
+        <span class="text-muted">Lesson:</span> ${esc(m.lesson)}<br>
+        <span class="text-muted">Prevent:</span> ${esc(m.prevention)}</div>
+      <div class="text-muted small mt-50">${esc(m.created_at)}</div>
+    </div></div>`).join('');
+  return `${pageHeading('Mistake Journal')}
+    <div class="card"><div class="card-body">
+      <label class="form-label">Problem</label><input id="m-problem" class="form-control mb-1">
+      <label class="form-label">Why it happened</label><input id="m-cause" class="form-control mb-1">
+      <label class="form-label">What I learned</label><input id="m-lesson" class="form-control mb-1">
+      <label class="form-label">How to prevent it</label><input id="m-prevention" class="form-control mb-1">
+      <button class="btn btn-primary" onclick="actSaveMistake()"><i data-feather="save"></i> Simpan</button>
+    </div></div>
+    ${items}`;
 }
 
 async function pageProgress() {
   const p = await api('/api/progress');
-  return `<h1>Progress</h1><h3>Overall</h3>${barHtml(p.overall)}
-    ${p.phases.map(x => `<h3>${esc(x.phase)} (${x.done}/${x.total})</h3>${barHtml(x.pct)}`).join('')}`;
+  let html = pageHeading('Progress') + `<div class="card"><div class="card-body">${barHtml(p.overall, p.overall >= 100)}</div></div>
+    <div class="row match-height">`;
+  html += p.phases.map(x => {
+    const pct = Math.round(x.pct);
+    return `<div class="col-xl-4 col-md-6 col-12"><div class="card"><div class="card-body">
+      <div class="d-flex justify-content-between"><h6 class="card-title mb-1">${esc(x.phase)}</h6><small class="text-muted">${x.done}/${x.total}</small></div>
+      ${barHtml(pct, pct >= 100)}</div></div></div>`;
+  }).join('');
+  return html + '</div>';
 }
 
 async function pageWeekly() {
   const d = await api('/api/dashboard');
   const p = await api('/api/progress');
-  return `<h1>Weekly Review</h1>
-    <div class="panel"><div><b>Lessons completed:</b> ${d.lessons_completed}/${d.lessons_total}</div>
-      <div><b>Challenges passed:</b> ${d.challenges_passed}/${d.challenges_total}</div>
-      <div><b>Learning time:</b> ${esc(d.learning_time)}</div><div><b>Streak:</b> ${d.streak} hari</div></div>
-    <div class="panel"><h3>Progress per topik</h3>
-      ${p.phases.map(x => `<div>${esc(x.phase)}: ${x.pct}%</div>`).join('')}
-      <p class="ghost">Data dari database nyata.</p></div>`;
+  const rows = p.phases.map(x => `
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>${esc(x.phase)}</span><span class="badge bg-light-primary rounded-pill">${x.pct}%</span></li>`).join('');
+  return `${pageHeading('Weekly Review')}
+    <div class="row">
+      <div class="col-lg-4 col-md-6 col-12"><div class="card"><div class="card-body">
+        <div class="mb-1"><span class="text-muted small">Lessons completed</span><div class="fw-bolder">${d.lessons_completed}/${d.lessons_total}</div></div>
+        <div class="mb-1"><span class="text-muted small">Challenges passed</span><div class="fw-bolder">${d.challenges_passed}/${d.challenges_total}</div></div>
+        <div class="mb-1"><span class="text-muted small">Learning time</span><div class="fw-bolder">${esc(d.learning_time)}</div></div>
+        <div><span class="text-muted small">Streak</span><div class="fw-bolder">${d.streak} hari</div></div>
+      </div></div></div>
+      <div class="col-lg-8 col-md-6 col-12"><div class="card"><div class="card-header"><h5 class="card-title mb-0">Progress per topik</h5></div>
+        <div class="card-body"><ul class="list-group list-group-flush">${rows}</ul>
+          <p class="text-muted small mb-0 mt-1">Data dari database nyata.</p></div></div></div>
+    </div>`;
 }
 
 function pageSettings() {
-  return `<h1>Settings</h1><div class="panel">
-    <p>Dark mode tersimpan di browser (localStorage).</p>
-    <button class="act" onclick="toggleTheme()">Toggle theme</button>
-    <h3>AI Usage Policy</h3><blockquote>TRY FIRST. THINK BEFORE ASKING AI.<br>USE AI TO LEARN, NOT TO AVOID THINKING.</blockquote>
-  </div>`;
+  return `${pageHeading('Settings')}
+    <div class="card"><div class="card-body">
+      <p class="mb-1">Dark mode tersimpan di browser (localStorage).</p>
+      <button class="btn btn-primary mb-2" onclick="toggleTheme()"><i data-feather="moon"></i> Toggle theme</button>
+      <hr>
+      <h6 class="card-title">AI Usage Policy</h6>
+      <blockquote class="blockquote">TRY FIRST. THINK BEFORE ASKING AI.<br>USE AI TO LEARN, NOT TO AVOID THINKING.</blockquote>
+    </div></div>`;
 }
 
 /* ================= Actions ================= */
@@ -251,7 +343,7 @@ const hintCache = {};
 async function actHint(slug, which) {
   if (!hintCache[slug]) hintCache[slug] = await api(`/api/challenges/${slug}`);
   const box = document.getElementById('hint-box');
-  box.innerHTML += `<div class="hint">${esc(hintCache[slug]['hint' + which])}</div>`;
+  box.innerHTML += `<div class="alert alert-warning py-1 small mb-50">${esc(hintCache[slug]['hint' + which])}</div>`;
   document.getElementById('hint-acc').value = Number(document.getElementById('hint-acc').value) + 1;
   document.getElementById('hint-count').textContent = document.getElementById('hint-acc').value;
 }
@@ -260,17 +352,18 @@ async function actSubmit(slug) {
   const code = document.getElementById('ch-code').value;
   const hints = Number(document.getElementById('hint-acc').value);
   const out = document.getElementById('ch-result');
-  out.innerHTML = '<div class="output">running...</div>';
+  out.innerHTML = '<div class="d-flex align-items-center text-primary"><i data-feather="loader"></i> running...</div>'; feather.replace();
   try {
     const res = await api(`/api/challenges/${slug}/submit`, 'POST', { code, hints_used: hints });
     if (res.status === 'passed') {
-      out.innerHTML = `<div class="output" style="color:var(--ok)">PASSED ${res.passed}/${res.total} tests</div>`;
+      out.innerHTML = `<div class="alert alert-success"><i data-feather="check-circle"></i> PASSED ${res.passed}/${res.total} tests</div>`;
     } else {
-      const f = res.failures.map(x => '<div class="failure">Expected: ' + esc(String(x.expected)) + ' — Received: ' + esc(String(x.got)) + '</div>').join('');
-      const e = res.error ? '<pre>' + esc(res.error) + '</pre>' : '';
-      out.innerHTML = `<div class="output err">FAILED ${res.passed}/${res.total} tests${f}${e}</div>`;
+      const f = res.failures.map(x => `<div class="small mb-50"><span class="text-danger">Expected:</span> ${esc(String(x.expected))} — <span class="text-danger">Received:</span> ${esc(String(x.got))}</div>`).join('');
+      const e = res.error ? '<pre class="output mt-1 mb-0">' + esc(res.error) + '</pre>' : '';
+      out.innerHTML = `<div class="alert alert-danger"><i data-feather="x-circle"></i> FAILED ${res.passed}/${res.total} tests${f}</div>${e}`;
     }
-  } catch (e) { out.innerHTML = `<div class="output err">${esc(e.message)}</div>`; }
+  } catch (e) { out.innerHTML = `<div class="alert alert-danger">${esc(e.message)}</div>`; }
+  feather.replace();
 }
 
 async function actRun() {
@@ -279,8 +372,8 @@ async function actRun() {
   try {
     const res = await api('/api/playground/run', 'POST', { code: document.getElementById('pg-code').value, language: 'python' });
     out.textContent = res.status === 'ok' ? res.output : (res.error || 'error');
-    out.className = 'output' + (res.status !== 'ok' ? ' err' : '');
-  } catch (e) { out.textContent = 'Network error: ' + e.message; out.className = 'output err'; }
+    out.className = 'output mt-1' + (res.status !== 'ok' ? ' output-err' : '');
+  } catch (e) { out.textContent = 'Network error: ' + e.message; out.className = 'output mt-1 output-err'; }
 }
 
 async function actToggleTask(input) {
@@ -325,7 +418,7 @@ async function route() {
     else if (pageMap[seg]) el.innerHTML = await pageMap[seg]();
     else el.innerHTML = '<h1>404</h1><p>Halaman tidak ditemukan.</p>';
   } catch (e) {
-    el.innerHTML = `<div class="panel"><h2>Error</h2><pre>${esc(e.message)}</pre></div>`;
+    el.innerHTML = `<div class="alert alert-danger"><h5 class="alert-heading">Error</h5><pre class="mb-0" style="white-space:pre-wrap">${esc(e.message)}</pre></div>`;
   }
   const titles = { dashboard: 'Dashboard', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings' };
   const pt = document.getElementById('page-title');
@@ -371,8 +464,8 @@ async function doSearch() {
   if (!q) { ul.innerHTML = ''; return; }
   const res = await api('/api/search?q=' + encodeURIComponent(q));
   ul.innerHTML = res.map(r =>
-    `<li><a href="#/lessons/${esc(r.slug)}" onclick="closeSearch()">${esc(r.title)} <span class="ghost">(${esc(r.folder)})</span></a></li>`
-  ).join('') || '<li class="ghost">Tidak ada hasil</li>';
+    `<li><a href="#/lessons/${esc(r.slug)}" onclick="closeSearch()">${esc(r.title)} <small class="text-muted">(${esc(r.folder)})</small></a></li>`
+  ).join('') || '<li class="text-muted">Tidak ada hasil</li>';
 }
 
 /* ================= Bootstrap ================= */
