@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+learning.db
+coverage/
+.infracost/
+.idea/
+.vscode/
