@@ -142,42 +142,48 @@ ROADMAP = [
         "phase": "se",
         "topics": [
             {"title": "Command Line", "lesson": "linux-basics"},
-            {"title": "Process, Service & Logs", "lesson": "linux-system"},
+            {"title": "Process, Port & Resources", "lesson": "linux-process"},
+            {"title": "Service, Logs & Environment", "lesson": "linux-service-logs"},
         ],
     },
     {
         "name": "Redis & Queue",
         "phase": "se",
         "topics": [
-            {"title": "Cache, Queue & Worker", "lesson": "redis-queue"},
+            {"title": "Caching & Session", "lesson": "redis-cache"},
+            {"title": "Queue, Job & Worker", "lesson": "queue-worker"},
         ],
     },
     {
         "name": "CI/CD",
         "phase": "se",
         "topics": [
-            {"title": "Build, Test & Deploy", "lesson": "cicd-basics"},
+            {"title": "CI: Build & Test", "lesson": "cicd-build-test"},
+            {"title": "CD: Deploy & Rollback", "lesson": "cicd-deploy-rollback"},
         ],
     },
     {
         "name": "Software Architecture",
         "phase": "se",
         "topics": [
-            {"title": "MVC, Layered & Clean", "lesson": "architecture"},
+            {"title": "MVC, Layered & SOLID", "lesson": "arch-layering"},
+            {"title": "Clean Architecture & DI", "lesson": "arch-clean-di"},
         ],
     },
     {
         "name": "System Design",
         "phase": "se",
         "topics": [
-            {"title": "Komponen & Scaling", "lesson": "system-design"},
+            {"title": "Komponen & Arsitektur 3-Tier", "lesson": "system-design-basics"},
+            {"title": "Scaling, Replication & Availability", "lesson": "system-design-scaling"},
         ],
     },
     {
         "name": "Observability",
         "phase": "se",
         "topics": [
-            {"title": "Logging, Metrics & Alerting", "lesson": "observability"},
+            {"title": "Structured Logging & Metrics", "lesson": "obs-logging-metrics"},
+            {"title": "Tracing, Monitoring & Alerting", "lesson": "obs-tracing-alerts"},
         ],
     },
 ]

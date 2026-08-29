@@ -8,7 +8,7 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 - [x] **M2 — Dashboard** (`/api/dashboard`, dashboard UI)
 - [x] **M3 — Lesson system** (render markdown, prev/next, mark as complete)
 - [x] **M4 — Progress tracking** (SQLite: lessons, lesson_progress, streak, sessions)
-- [x] **M5 — Challenge system** (15 challenge Python: 10 easy + 5 medium, hidden tests, hints, attempts)
+- [x] **M5 — Challenge system** (70 challenge Python: 30 easy + 30 medium + 10 advanced, hidden tests, hints, attempts)
 - [x] **M6 — Python playground** (safe subprocess runner, timeout, isolasi)
 - [x] **M7 — Notes + Mistake Journal**
 - [ ] **M8 — Weekly Review** (halaman dasar sudah ada, perbaiki rekomendasi data)
@@ -25,7 +25,7 @@ Status dan progres pengembangan platform ini. Data belajar user tersimpan di SQL
 - [x] Mark as Complete (server-side)
 - [x] Python Playground (run kode)
 - [x] 5 Python challenges (easy) dengan hidden tests + hint 1/2
-- [x] 15 Python challenges (10 easy + 5 medium) — Problem Solving: binary search, two sum, dsb.
+- [x] 70 Python challenges (30 easy + 30 medium + 10 advanced) — Problem Solving: two sum, sliding window, DP, tree, dsb.
 - [x] Notes & Mistake Journal (CRUD)
 - [x] Progress per topik
 - [x] Dark mode + search (Ctrl+K) + Ctrl+Enter run

@@ -68,14 +68,14 @@ BelajarLagi/
 
 Setiap lesson membawa kamu melalui: Objective → Theory → Analogy → Example → Code → Explanation → Common Mistakes → Manual Exercises → Challenge → Reflection → Checklist.
 
-Materi dikembangkan bertahap dari `belajar.txt`. Tersedia **59 lesson** mencakup 24 level:
+Materi dikembangkan bertahap dari `belajar.txt`. Tersedia **65 lesson** mencakup 24 level:
 - **Python** (Day 01–28): Fundamentals, Intermediate, Problem Solving, Software Engineering, Backend, OOP.
 - **SQL** (5): CRUD, JOIN, Design/Normalization, Transaction, Optimization.
 - **PHP** (4): Fundamentals, Function/Array, OOP, Composer/PSR/SOLID.
 - **CodeIgniter** (3): MVC/Routing, Model/DB, Auth/Filter/REST.
 - **Laravel** (3): Routing/Blade, Eloquent, Auth/Queue/Events.
 - **JavaScript** (4): Fundamentals, DOM, Async/Fetch, Frontend Framework.
-- **Software Engineering** (12): Security (3), Docker (2), Linux (2), Redis/Queue, CI/CD, Architecture, System Design, Observability.
+- **Software Engineering** (18): Security (3), Docker (2), Linux (3), Redis & Queue (2), CI/CD (2), Architecture (2), System Design (2), Observability (2).
 
 ## How challenges work
 
