@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belajar Lagi</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="brand">BELAJAR LAGI</div>
+    <nav>
+      <a href="#/dashboard" data-nav>Dashboard</a>
+      <a href="#/roadmap" data-nav>Roadmap</a>
+      <a href="#/lessons/day01" data-nav>Learn</a>
+      <a href="#/challenges" data-nav>Challenges</a>
+      <a href="#/playground" data-nav>Playground</a>
+      <a href="#/projects" data-nav>Projects</a>
+      <a href="#/notes" data-nav>Notes</a>
+      <a href="#/mistakes" data-nav>Mistakes</a>
+      <a href="#/progress" data-nav>Progress</a>
+      <a href="#/weekly" data-nav>Weekly Review</a>
+      <a href="#/bookmarks" data-nav>Settings</a>
+    </nav>
+    <div class="sidebar-foot">
+      <button id="theme-toggle">Dark / Light</button>
+      <button id="search-btn">Search (Ctrl+K)</button>
+    </div>
+  </aside>
+
+  <main id="content">
+    <!-- rendered by JS -->
+  </main>
+</div>
+
+<div id="search-modal" class="modal hidden">
+  <div class="modal-box">
+    <input id="search-input" type="text" placeholder="Cari materi... (misal: python dictionary, SQL JOIN)">
+    <ul id="search-results"></ul>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
