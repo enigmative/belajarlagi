@@ -66,63 +66,118 @@ ROADMAP = [
         "name": "Python OOP",
         "phase": "python",
         "topics": [
-            {"title": "Class", "lesson": None},
-            {"title": "Object", "lesson": None},
-            {"title": "Inheritance", "lesson": None},
-        ],
-    },
-    {
-        "name": "PHP Fundamentals",
-        "phase": "php",
-        "topics": [
-            {"title": "Syntax & Type", "lesson": None},
-            {"title": "Array", "lesson": None},
-            {"title": "Function", "lesson": None},
+            {"title": "Class", "lesson": "day13"},
+            {"title": "Object", "lesson": "day13"},
+            {"title": "Inheritance", "lesson": "day14"},
         ],
     },
     {
         "name": "Database & SQL",
         "phase": "sql",
         "topics": [
-            {"title": "SELECT / CRUD", "lesson": None},
-            {"title": "JOIN", "lesson": None},
-            {"title": "Normalization", "lesson": None},
+            {"title": "SELECT / CRUD", "lesson": "sql-crud"},
+            {"title": "JOIN", "lesson": "sql-join"},
+            {"title": "Design & Normalization", "lesson": "sql-design"},
+            {"title": "Transaction", "lesson": "sql-transaction"},
+            {"title": "Query Optimization", "lesson": "sql-optimization"},
+        ],
+    },
+    {
+        "name": "PHP Fundamentals",
+        "phase": "php",
+        "topics": [
+            {"title": "Syntax & Type", "lesson": "php-basics"},
+            {"title": "Function & Array", "lesson": "php-functions"},
+            {"title": "OOP", "lesson": "php-oop"},
+            {"title": "Composer, PSR & SOLID", "lesson": "php-composer"},
         ],
     },
     {
         "name": "CodeIgniter",
         "phase": "codeigniter",
         "topics": [
-            {"title": "Routing", "lesson": None},
-            {"title": "Controller & Model", "lesson": None},
-            {"title": "Auth", "lesson": None},
+            {"title": "MVC & Routing", "lesson": "ci-mvc-routing"},
+            {"title": "Model & Database", "lesson": "ci-model-db"},
+            {"title": "Auth, Filter & REST", "lesson": "ci-auth-rest"},
         ],
     },
     {
         "name": "Laravel",
         "phase": "laravel",
         "topics": [
-            {"title": "Routing & Middleware", "lesson": None},
-            {"title": "Eloquent", "lesson": None},
-            {"title": "Queue", "lesson": None},
+            {"title": "Routing, Controller & Blade", "lesson": "laravel-basics"},
+            {"title": "Eloquent & Relasi", "lesson": "laravel-eloquent"},
+            {"title": "Auth, Queue & Events", "lesson": "laravel-advanced"},
         ],
     },
     {
         "name": "JavaScript",
         "phase": "javascript",
         "topics": [
-            {"title": "Types & Functions", "lesson": None},
-            {"title": "DOM & Events", "lesson": None},
-            {"title": "Async/Await", "lesson": None},
+            {"title": "Types & Functions", "lesson": "js-basics"},
+            {"title": "DOM & Events", "lesson": "js-dom"},
+            {"title": "Async/Await & Fetch", "lesson": "js-async"},
+            {"title": "Frontend Framework", "lesson": "js-framework"},
         ],
     },
     {
-        "name": "Software Engineering",
+        "name": "Web Security",
         "phase": "se",
         "topics": [
-            {"title": "Git", "lesson": None},
-            {"title": "Testing", "lesson": None},
-            {"title": "Architecture", "lesson": None},
+            {"title": "Auth, Session & Password", "lesson": "sec-auth"},
+            {"title": "CSRF, XSS & SQLi", "lesson": "sec-attacks"},
+            {"title": "API Hardening", "lesson": "sec-api"},
+        ],
+    },
+    {
+        "name": "Docker",
+        "phase": "se",
+        "topics": [
+            {"title": "Image & Container", "lesson": "docker-basics"},
+            {"title": "Volume, Network & Compose", "lesson": "docker-compose"},
+        ],
+    },
+    {
+        "name": "Linux",
+        "phase": "se",
+        "topics": [
+            {"title": "Command Line", "lesson": "linux-basics"},
+            {"title": "Process, Service & Logs", "lesson": "linux-system"},
+        ],
+    },
+    {
+        "name": "Redis & Queue",
+        "phase": "se",
+        "topics": [
+            {"title": "Cache, Queue & Worker", "lesson": "redis-queue"},
+        ],
+    },
+    {
+        "name": "CI/CD",
+        "phase": "se",
+        "topics": [
+            {"title": "Build, Test & Deploy", "lesson": "cicd-basics"},
+        ],
+    },
+    {
+        "name": "Software Architecture",
+        "phase": "se",
+        "topics": [
+            {"title": "MVC, Layered & Clean", "lesson": "architecture"},
+        ],
+    },
+    {
+        "name": "System Design",
+        "phase": "se",
+        "topics": [
+            {"title": "Komponen & Scaling", "lesson": "system-design"},
+        ],
+    },
+    {
+        "name": "Observability",
+        "phase": "se",
+        "topics": [
+            {"title": "Logging, Metrics & Alerting", "lesson": "observability"},
         ],
     },
 ]

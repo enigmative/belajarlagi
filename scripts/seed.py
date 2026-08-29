@@ -37,6 +37,43 @@ LESSONS = [
     {"slug": "day26", "title": "Day 26 — HTTP & REST", "phase": "python", "order": 26, "file": "daily/day26.md"},
     {"slug": "day27", "title": "Day 27 — FastAPI", "phase": "python", "order": 27, "file": "daily/day27.md"},
     {"slug": "day28", "title": "Day 28 — Backend Project (Employee API)", "phase": "python", "order": 28, "file": "daily/day28.md"},
+    # Database & SQL (Level 6)
+    {"slug": "sql-crud", "title": "SQL — CRUD & Query Dasar", "phase": "sql", "order": 101, "file": "database/sql-crud.md"},
+    {"slug": "sql-join", "title": "SQL — JOIN", "phase": "sql", "order": 102, "file": "database/sql-join.md"},
+    {"slug": "sql-design", "title": "SQL — Database Design & Normalization", "phase": "sql", "order": 103, "file": "database/sql-design.md"},
+    {"slug": "sql-transaction", "title": "SQL — Transaction & ACID", "phase": "sql", "order": 104, "file": "database/sql-transaction.md"},
+    {"slug": "sql-optimization", "title": "SQL — Query Optimization", "phase": "sql", "order": 105, "file": "database/sql-optimization.md"},
+    # PHP (Level 7-8)
+    {"slug": "php-basics", "title": "PHP — Fundamentals", "phase": "php", "order": 201, "file": "php/php-basics.md"},
+    {"slug": "php-functions", "title": "PHP — Function, Array, & Loop", "phase": "php", "order": 202, "file": "php/php-functions.md"},
+    {"slug": "php-oop", "title": "PHP — OOP", "phase": "php", "order": 203, "file": "php/php-oop.md"},
+    {"slug": "php-composer", "title": "PHP — Composer, PSR, & SOLID", "phase": "php", "order": 204, "file": "php/php-composer.md"},
+    # CodeIgniter (Level 9-10)
+    {"slug": "ci-mvc-routing", "title": "CodeIgniter — MVC & Routing", "phase": "codeigniter", "order": 301, "file": "codeigniter/ci-mvc-routing.md"},
+    {"slug": "ci-model-db", "title": "CodeIgniter — Model, Database, & Validation", "phase": "codeigniter", "order": 302, "file": "codeigniter/ci-model-db.md"},
+    {"slug": "ci-auth-rest", "title": "CodeIgniter — Session, Auth, Filter, & REST API", "phase": "codeigniter", "order": 303, "file": "codeigniter/ci-auth-rest.md"},
+    # Laravel (Level 11-12)
+    {"slug": "laravel-basics", "title": "Laravel — Routing, Controller, Blade, & Middleware", "phase": "laravel", "order": 401, "file": "laravel/laravel-basics.md"},
+    {"slug": "laravel-eloquent", "title": "Laravel — Eloquent ORM & Relasi", "phase": "laravel", "order": 402, "file": "laravel/laravel-eloquent.md"},
+    {"slug": "laravel-advanced", "title": "Laravel — Auth, Queue, Events, & Fitur Produksi", "phase": "laravel", "order": 403, "file": "laravel/laravel-advanced.md"},
+    # JavaScript (Level 13-15)
+    {"slug": "js-basics", "title": "JavaScript — Fundamentals", "phase": "javascript", "order": 501, "file": "javascript/js-basics.md"},
+    {"slug": "js-dom", "title": "JavaScript — DOM & Events", "phase": "javascript", "order": 502, "file": "javascript/js-dom.md"},
+    {"slug": "js-async", "title": "JavaScript — Async, Fetch, Promise, JSON", "phase": "javascript", "order": 503, "file": "javascript/js-async.md"},
+    {"slug": "js-framework", "title": "Frontend Framework — Vue & React", "phase": "javascript", "order": 504, "file": "javascript/js-framework.md"},
+    # Software Engineering (Level 16-23)
+    {"slug": "sec-auth", "title": "Security — Auth, Session, Cookie, Password", "phase": "se", "order": 601, "file": "software_engineering/sec-auth.md"},
+    {"slug": "sec-attacks", "title": "Security — CSRF, XSS, SQL Injection", "phase": "se", "order": 602, "file": "software_engineering/sec-attacks.md"},
+    {"slug": "sec-api", "title": "Security — API Hardening", "phase": "se", "order": 603, "file": "software_engineering/sec-api.md"},
+    {"slug": "docker-basics", "title": "Docker — Image, Container, Dockerfile", "phase": "se", "order": 604, "file": "software_engineering/docker-basics.md"},
+    {"slug": "docker-compose", "title": "Docker — Volume, Network, Environment, Compose", "phase": "se", "order": 605, "file": "software_engineering/docker-compose.md"},
+    {"slug": "linux-basics", "title": "Linux — Command Line Dasar", "phase": "se", "order": 606, "file": "software_engineering/linux-basics.md"},
+    {"slug": "linux-system", "title": "Linux — Process, Service, & Logs", "phase": "se", "order": 607, "file": "software_engineering/linux-system.md"},
+    {"slug": "redis-queue", "title": "Redis & Queue — Cache, Job, Worker", "phase": "se", "order": 608, "file": "software_engineering/redis-queue.md"},
+    {"slug": "cicd-basics", "title": "CI/CD — Build, Test, Deploy", "phase": "se", "order": 609, "file": "software_engineering/cicd-basics.md"},
+    {"slug": "architecture", "title": "Software Architecture — MVC, Layered, Clean", "phase": "se", "order": 610, "file": "software_engineering/architecture.md"},
+    {"slug": "system-design", "title": "System Design — Komponen & Scaling", "phase": "se", "order": 611, "file": "software_engineering/system-design.md"},
+    {"slug": "observability", "title": "Observability — Logging, Metrics, Alerting", "phase": "se", "order": 612, "file": "software_engineering/observability.md"},
 ]
 
 PHASES = [
