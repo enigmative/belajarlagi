@@ -55,7 +55,15 @@ def test_playground_blocks_os():
 def test_challenges_list():
     r = client.get("/api/challenges")
     assert r.status_code == 200
-    assert len(r.json()) >= 5
+    assert len(r.json()) >= 10
+
+
+def test_challenge_fizzbuzz():
+    code = 'def solve(n):\n    res=[]\n    for i in range(1,n+1):\n        if i%15==0: res.append("FizzBuzz")\n        elif i%3==0: res.append("Fizz")\n        elif i%5==0: res.append("Buzz")\n        else: res.append(i)\n    return res'
+    r = client.post("/api/challenges/fizzbuzz/submit",
+                    json={"code": code, "hints_used": 0})
+    assert r.status_code == 200
+    assert r.json()["status"] == "passed"
 
 
 def test_challenge_correct():

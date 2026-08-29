@@ -53,3 +53,22 @@ def test_challenge_edge_cases():
     # expect max(ns) to raise -> harness marks 'err' -> failure. Using full correct impl:
     res = chall.evaluate(c, "def solve(ns):\n    return max(ns)")
     assert res["passed"] == res["total"]
+
+
+def test_new_challenges_all_pass_with_correct_solution():
+    conn = get_conn()
+    sols = {
+        "fizzbuzz": 'def solve(n):\n    res=[]\n    for i in range(1,n+1):\n        if i%15==0: res.append("FizzBuzz")\n        elif i%3==0: res.append("Fizz")\n        elif i%5==0: res.append("Buzz")\n        else: res.append(i)\n    return res',
+        "leap-year": "def solve(y):\n    return y%4==0 and (y%100!=0 or y%400==0)",
+        "factorial": "def solve(n):\n    r=1\n    for i in range(1,n+1): r*=i\n    return r",
+        "count-vowels": 'def solve(t):\n    return sum(1 for c in t.lower() if c in "aeiou")',
+        "second-largest": "def solve(ns):\n    return sorted(ns)[-2]",
+    }
+    try:
+        for slug, code in sols.items():
+            c = conn.execute("SELECT * FROM challenges WHERE slug=?", (slug,)).fetchone()
+            assert c, f"challenge {slug} missing"
+            res = chall.evaluate(c, code)
+            assert res["status"] == "passed", f"{slug}: {res}"
+    finally:
+        conn.close()
