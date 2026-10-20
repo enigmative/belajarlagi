@@ -182,6 +182,58 @@ cd /mount/hdd/belajar-lagi
 - `BELAJAR_LAGI_HTTPS=1` wajib agar cookie `Secure` (aman dikirim lewat HTTPS).
 - Pastikan `/mount/hdd` (atau mount point-mu) auto-mount saat reboot (`/etc/fstab`).
 
+## GitHub Actions (CI/CD) — auto-deploy dari push ke `main`
+
+Workflow ada di `.github/workflows/deploy.yml`. Trigger: push ke `main` atau manual (`workflow_dispatch`).
+
+### Setup self-hosted runner (sekali)
+
+1. GitHub → repo → Settings → Actions → Runners → **New self-hosted runner** → pilih Linux ARM64.
+2. Jalankan perintah yang diberikan GitHub di server (sebagai `LAB-02`):
+   ```bash
+   mkdir -p ~/actions-runner && cd ~/actions-runner
+   curl -o actions-runner-linux-arm64-2.319.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.319.0/actions-runner-linux-arm64-2.319.0.tar.gz
+   tar xzf *.tar.gz
+   ./config.sh --url https://github.com/enigmative/belajarlagi --token <TOKEN_DARI_GITHUB>
+   sudo ./svc.sh install LAB-02
+   sudo ./svc.sh start
+   ```
+3. Pasang sudoers terbatas:
+   ```bash
+   sudo cp deploy/sudoers/belajar-deploy /etc/sudoers.d/belajar-deploy
+   sudo chmod 440 /etc/sudoers.d/belajar-deploy
+   sudo visudo -cf /etc/sudoers.d/belajar-deploy
+   ```
+4. Pastikan `LAB-02` punya akses git ke repo (SSH key atau credential helper).
+
+### Alur deploy
+
+```
+git push origin main
+  → GitHub Actions
+    → backup DB
+    → git pull origin main
+    → pip install -r requirements.txt
+    → docker pull python:3.11-slim
+    → sudo systemctl restart belajar-lagi
+    → health check (curl /api/courses, max 30x2s)
+```
+
+### Deploy manual (tanpa GitHub Actions)
+
+```bash
+bash scripts/deploy.sh
+```
+
+### Rollback
+
+```bash
+cd /mount/hdd/belajar-lagi
+git log --oneline -5
+git reset --hard <commit-sebelumnya>
+sudo systemctl restart belajar-lagi
+```
+
 ## Troubleshooting
 
 | Gejala | Penyebab | Solusi |

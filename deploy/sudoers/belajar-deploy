@@ -1,0 +1,8 @@
+# Drop-in sudoers for the GitHub Actions self-hosted runner user.
+# Install with:
+#   sudo cp deploy/sudoers/belajar-deploy /etc/sudoers.d/belajar-deploy
+#   sudo chmod 440 /etc/sudoers.d/belajar-deploy
+#   sudo visudo -cf /etc/sudoers.d/belajar-deploy
+#
+# Replace LAB-02 with the user that runs the self-hosted runner.
+LAB-02 ALL=(ALL) NOPASSWD: /bin/systemctl restart belajar-lagi, /bin/systemctl status belajar-lagi

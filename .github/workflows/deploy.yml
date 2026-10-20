@@ -1,0 +1,42 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Backup database
+        working-directory: /mount/hdd/belajar-lagi
+        run: .venv/bin/python scripts/backup_db.py
+
+      - name: Pull code
+        working-directory: /mount/hdd/belajar-lagi
+        run: git pull origin main
+
+      - name: Install dependencies
+        working-directory: /mount/hdd/belajar-lagi
+        run: .venv/bin/pip install -r requirements.txt
+
+      - name: Pull docker image
+        run: docker pull python:3.11-slim || true
+
+      - name: Restart app
+        working-directory: /mount/hdd/belajar-lagi
+        run: sudo systemctl restart belajar-lagi
+
+      - name: Health check
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api/courses)
+            if [ "$code" = "200" ]; then echo "healthy (200)"; exit 0; fi
+            sleep 2
+          done
+          echo "health check failed"; exit 1
