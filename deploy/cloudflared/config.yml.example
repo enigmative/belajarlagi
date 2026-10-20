@@ -1,0 +1,13 @@
+# Contoh konfigurasi tunnel Cloudflare untuk Belajar Lagi.
+# Salin ke ~/.cloudflared/config.yml lalu sesuaikan.
+#
+# Dapatkan UUID dan credentials-file dari:
+#   cloudflared tunnel create belajar-lagi
+#
+tunnel: <TUNNEL-UUID>
+credentials-file: /home/<USER>/.cloudflared/<TUNNEL-UUID>.json
+
+ingress:
+  - hostname: belajarlagi.enigmative.web.id
+    service: http://localhost:8000
+  - service: http_status:404

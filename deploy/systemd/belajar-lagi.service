@@ -4,12 +4,14 @@ After=network.target docker.service
 Requires=docker.service
 
 [Service]
-WorkingDirectory=/srv/belajar-lagi
-Environment=BELAJAR_LAGI_DB=/srv/belajar-lagi/learning.db
+User=LAB-02
+Group=LAB-02
+WorkingDirectory=/mount/hdd/belajar-lagi
+Environment=BELAJAR_LAGI_DB=/mount/hdd/belajar-lagi/learning.db
 Environment=BELAJAR_LAGI_HTTPS=1
 Environment=BELAJAR_LAGI_RUNNER=1
 Environment=BELAJAR_LAGI_RUNNER_BACKEND=docker
-ExecStart=/srv/belajar-lagi/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+ExecStart=/mount/hdd/belajar-lagi/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 Restart=on-failure
 RestartSec=3
 

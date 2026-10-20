@@ -88,6 +88,8 @@ $env:BELAJAR_LAGI_DB = "C:\path\ke\database.db"
 
 SQLite hanya cocok untuk **satu worker**. Jangan jalankan beberapa proses uvicorn yang menulis database yang sama.
 
+> Panduan lengkap (termasuk Cloudflare Tunnel, sandbox Docker, dan troubleshooting) ada di [`deploy/README.md`](deploy/README.md).
+
 ### 1. Siapkan database (fresh) dan admin pertama
 
 ```bash
