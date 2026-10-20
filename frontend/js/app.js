@@ -5,6 +5,10 @@ function esc(s) {
   return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
+function escAttr(s) {
+  return esc(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function renderMarkdown(md) {
   let html = '';
   const lines = (md || '').split('\n');
@@ -154,8 +158,8 @@ async function pageDashboard() {
   let iv = null;
   try { iv = await api('/api/interview/summary'); } catch (e) { iv = null; }
   const btn = d.current_lesson
-    ? `<a class="button" href="#/lessons/${esc(d.current_lesson.slug)}">Continue — ${esc(d.current_lesson.title)} →</a>`
-    : `<a class="button" href="#/roadmap">Mulai dari Roadmap →</a>`;
+    ? `<a class="button" href="#/lessons/${esc(d.current_lesson.slug)}">Lanjutkan — ${esc(d.current_lesson.title)} →</a>`
+    : `<a class="button" href="#/courses">Pilih Kelas →</a>`;
   const ivCard = iv ? pageCard('Interview Prep — Sprint 3 Hari', `
     <div style="padding-bottom:var(--line);margin-bottom:var(--line);border-bottom:1px solid rgba(var(--black-rgb),.1)">
       <div class="mega" style="font-size:calc(var(--font-size)*2.2);line-height:1">${iv.overall.pct}%</div>
@@ -180,7 +184,7 @@ async function pageDashboard() {
       <div class="card-body">${barHtml(d.overall_pct, d.overall_pct >= 100, false)}</div>
     </div>
     <div class="stat-grid" style="margin-bottom:var(--line)">
-      ${statCard('layers', 'Current Phase', esc(d.current_phase || '—'))}
+      ${statCard('layers', 'Kelas Aktif', esc(d.current_course ? d.current_course.title : (d.current_phase_title || d.current_phase || '—')))}
       ${statCard('book', 'Lessons', `${d.lessons_completed}/${d.lessons_total}`)}
       ${statCard('code', 'Challenges', `${d.challenges_passed}/${d.challenges_total}`)}
       ${statCard('award', 'Interview', iv ? `${iv.overall.correct}/${iv.overall.total}` : '—')}
@@ -191,9 +195,10 @@ async function pageDashboard() {
       <div class="card-header"><h4 class="card-title" style="margin:0">Continue Learning</h4></div>
       <div class="card-body">
         ${d.current_lesson
-          ? `<p class="card-text" style="margin-bottom:var(--line)">Lanjutkan: <strong>${esc(d.current_lesson.title)}</strong></p>`
+          ? `<p class="card-text" style="margin-bottom:.25rem">Lanjutkan: <strong>${esc(d.current_lesson.title)}</strong></p>
+             <p class="small text-muted" style="margin-bottom:var(--line)">${esc(d.current_lesson.course_title || '')}</p>`
           : '<p class="card-text text-muted" style="margin-bottom:var(--line)">Belum ada lesson aktif.</p>'}
-        <div>${btn}</div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">${btn}<a class="button outline" href="#/courses">Lihat Semua Kelas</a></div>
       </div>
     </div>
     ${ivCard}
@@ -203,6 +208,105 @@ async function pageDashboard() {
         <p class="text-muted small mb-0" style="text-transform:none;letter-spacing:0">Gunakan AI untuk belajar, bukan untuk menghindar dari berpikir.</p>
       </div>
     </div>`;
+}
+
+/* ================= Courses ================= */
+function courseCard(c) {
+  const pct = Number(c.progress_pct || 0);
+  const cta = c.enrolled ? (pct > 0 ? 'Lanjutkan' : 'Mulai') : 'Lihat Kelas';
+  return `<a class="course-card" data-category="${escAttr(c.category || '')}" href="#/courses/${esc(c.slug)}">
+    <div class="course-card-top">
+      <span class="course-icon"><i data-feather="${escAttr(c.icon || 'book-open')}"></i></span>
+      <span class="badge badge-primary">${esc(c.level || 'Semua Level')}</span>
+    </div>
+    <h3 class="course-card-title">${esc(c.title)}</h3>
+    <p class="course-card-desc">${esc(c.description || '')}</p>
+    <div class="course-meta"><span>${c.lessons_total} materi</span><span>${esc(c.category || '')}</span></div>
+    ${barHtml(pct, pct >= 100)}
+    <div class="course-card-footer">
+      <span class="small text-muted">${c.lessons_completed}/${c.lessons_total} selesai</span>
+      <span class="course-card-link">${cta} →</span>
+    </div>
+  </a>`;
+}
+
+async function pageCourses() {
+  const data = await api('/api/courses');
+  const categories = ['Semua', ...(data.categories || [])];
+  const filters = categories.map((cat, i) =>
+    `<button class="filter-pill ${i === 0 ? 'active' : ''}" data-cat="${escAttr(cat)}" onclick="filterCourses(this.dataset.cat, this)">${esc(cat)}</button>`
+  ).join('');
+  return `${pageHeading('Kelas')}
+    <p class="page-lead">Pilih kelas, ikuti modulnya, dan selesaikan materinya satu per satu. Progres setiap kelas dihitung terpisah.</p>
+    <div class="course-filters">${filters}</div>
+    <div class="course-grid" id="course-grid">${data.courses.map(courseCard).join('')}</div>`;
+}
+
+function filterCourses(cat, btn) {
+  document.querySelectorAll('#course-grid .course-card').forEach(card => {
+    card.style.display = (cat === 'Semua' || card.dataset.category === cat) ? '' : 'none';
+  });
+  document.querySelectorAll('.filter-pill').forEach(el => el.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+async function pageCourse(slug) {
+  const c = await api(`/api/courses/${slug}`);
+  const pct = Number(c.progress_pct || 0);
+  const buttonLabel = c.enrolled ? (pct > 0 ? 'Lanjutkan Belajar' : 'Mulai Kelas') : 'Mulai Kelas';
+  const action = c.next_lesson
+    ? `<button class="button" onclick="actStartCourse('${escAttr(slug)}')">${buttonLabel} →</button>`
+    : '';
+  const modules = c.modules.map((m, idx) => `
+    <details class="course-module" ${idx === 0 ? 'open' : ''}>
+      <summary><span>${esc(m.title)}</span><span class="small text-muted">${m.lessons.length} materi</span></summary>
+      <div class="course-lesson-list">
+        ${m.lessons.map(l => `<a class="course-lesson-row ${l.completed ? 'done' : ''}" href="#/lessons/${esc(l.slug)}">
+          <span class="course-lesson-state">${l.completed ? '✓' : '○'}</span>
+          <span class="course-lesson-title">${esc(l.title)}</span>
+          <span class="course-lesson-status">${l.completed ? 'Selesai' : 'Belum'}</span>
+        </a>`).join('')}
+      </div>
+    </details>`).join('');
+
+  return `<div class="lesson-breadcrumb"><a href="#/courses">Kelas</a> / <span>${esc(c.category || '')}</span></div>
+    ${pageHeading(esc(c.title))}
+    <div class="course-hero">
+      <div class="course-hero-icon"><i data-feather="${escAttr(c.icon || 'book-open')}"></i></div>
+      <div>
+        <p class="page-lead">${esc(c.description || '')}</p>
+        <div class="course-meta"><span>${esc(c.level || '')}</span><span>${c.lessons_total} materi</span><span>${esc(c.category || '')}</span></div>
+      </div>
+    </div>
+    <div class="card course-progress-card"><div class="card-body">
+      <div class="course-progress-head"><span>Progres kelas</span><strong>${c.lessons_completed}/${c.lessons_total} · ${pct}%</strong></div>
+      ${barHtml(pct, pct >= 100, false)}
+    </div></div>
+    <div class="course-detail-grid">
+      <div class="course-curriculum">${modules || '<p class="text-muted">Belum ada materi.</p>'}</div>
+      <aside class="course-aside card"><div class="card-body">
+        <div class="course-aside-icon"><i data-feather="${escAttr(c.icon || 'book-open')}"></i></div>
+        <h4 class="card-title">${c.enrolled ? 'Kelas ini ada di daftar belajarmu' : 'Mulai kelas ini'}</h4>
+        <p class="small text-muted">${c.next_lesson ? `Materi berikutnya: ${esc(c.next_lesson.title)}` : 'Semua materi sudah selesai.'}</p>
+        ${action}
+        <a class="button outline" href="#/my-learning" style="margin-top:.5rem;display:block;text-align:center">Kelas Saya</a>
+      </div></aside>
+    </div>`;
+}
+
+async function pageMyLearning() {
+  const data = await api('/api/my-learning');
+  if (!data.courses.length) {
+    return `${pageHeading('Kelas Saya')}
+      <div class="card empty-state"><div class="card-body">
+        <h4 class="card-title">Belum ada kelas yang diikuti</h4>
+        <p class="text-muted">Mulai dari satu kelas, lalu progresnya akan muncul di sini.</p>
+        <a class="button" href="#/courses">Jelajahi Kelas →</a>
+      </div></div>`;
+  }
+  return `${pageHeading('Kelas Saya')}
+    <p class="page-lead">Lanjutkan kelas yang sudah kamu mulai. Progres dihitung per kelas.</p>
+    <div class="course-grid">${data.courses.map(courseCard).join('')}</div>`;
 }
 
 /* ================= Interview Prep ================= */
@@ -495,11 +599,36 @@ async function pageLesson(slug) {
     : `<button class="button" onclick="actComplete('${esc(slug)}')">Mark as Complete</button>`;
   const pv = l.prev ? `<a class="button outline" href="#/lessons/${esc(l.prev.slug)}">← Previous</a>` : '';
   const nx = l.next ? `<a class="button" href="#/lessons/${esc(l.next.slug)}">Next →</a>` : '';
-  return `${pageHeading(esc(l.title))}
+  const content = `${pageHeading(esc(l.title))}
     <div class="card"><div class="card-body lesson-markdown">${renderMarkdown(l.markdown)}</div></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:var(--line)">
+    <div class="lesson-actions">
       <div>${pv} ${nx}</div>
       <div>${btn}</div>
+    </div>`;
+
+  const c = l.course;
+  if (!c) return content;
+
+  const outline = `<aside class="lesson-outline card">
+    <div class="card-header"><div>
+      <h4 class="card-title" style="margin:0">${esc(c.title)}</h4>
+      <div class="small text-muted">${c.lessons_completed}/${c.lessons_total} materi selesai</div>
+    </div></div>
+    <div class="card-body">
+      ${c.modules.map(m => `<div class="outline-module">
+        <div class="outline-module-title">${esc(m.title)}</div>
+        ${m.lessons.map(x => `<a class="outline-lesson ${x.slug === slug ? 'active' : ''} ${x.completed ? 'done' : ''}" href="#/lessons/${esc(x.slug)}">
+          <span class="outline-lesson-state">${x.completed ? '✓' : '○'}</span>
+          <span>${esc(x.title)}</span>
+        </a>`).join('')}
+      </div>`).join('')}
+    </div>
+  </aside>`;
+
+  return `<div class="lesson-breadcrumb"><a href="#/courses">Kelas</a> / <a href="#/courses/${esc(c.slug)}">${esc(c.title)}</a> / <span>${esc(c.module_title || '')}</span></div>
+    <div class="lesson-layout">
+      <div class="lesson-main">${content}</div>
+      ${outline}
     </div>`;
 }
 
@@ -635,15 +764,20 @@ async function pageMistakes() {
 
 async function pageProgress() {
   const p = await api('/api/progress');
-  let html = pageHeading('Progress') + `<div class="card"><div class="card-body">${barHtml(p.overall, p.overall >= 100)}</div></div>
-    <div style="display:flex;flex-wrap:wrap;gap:var(--char2);margin-top:var(--line)">`;
-  html += p.phases.map(x => {
-    const pct = Math.round(x.pct);
-    return `<div style="flex:1;min-width:220px" class="card"><div class="card-body">
-      <div style="display:flex;justify-content:space-between"><h4 class="card-title" style="margin:0">${esc(x.phase)}</h4><span class="text-muted small">${x.done}/${x.total}</span></div>
-      ${barHtml(pct, pct >= 100)}</div></div>`;
-  }).join('');
-  return html + '</div>';
+  const active = (p.courses || []).filter(c => c.enrolled || c.done > 0);
+  const cards = active.map(c => `<a class="course-progress-item" href="#/courses/${esc(c.slug)}">
+    <div class="course-progress-head"><span>${esc(c.title)}</span><span class="small text-muted">${c.done}/${c.total}</span></div>
+    <div class="course-meta" style="margin-bottom:.5rem"><span>${esc(c.category || '')}</span></div>
+    ${barHtml(c.pct, c.pct >= 100)}
+  </a>`).join('');
+  return `${pageHeading('Progress')}
+    <p class="page-lead">Progres keseluruhan dan progres per kelas yang sedang kamu ikuti.</p>
+    <div class="card"><div class="card-body">
+      <div class="course-progress-head"><span>Overall Progress</span><strong>${p.overall}%</strong></div>
+      ${barHtml(p.overall, p.overall >= 100, false)}
+    </div></div>
+    <h3 class="section-title">Per Kelas</h3>
+    ${cards ? `<div class="course-progress-list">${cards}</div>` : `<div class="card empty-state"><div class="card-body"><p class="text-muted" style="margin:0">Belum ada kelas yang dimulai. <a href="#/courses">Pilih kelas →</a></p></div></div>`}`;
 }
 
 async function pageWeekly() {
@@ -679,6 +813,12 @@ function pageSettings() {
 
 /* ================= Actions ================= */
 async function actComplete(slug) { await api(`/api/lessons/${slug}/complete`, 'POST', {}); route(); }
+
+async function actStartCourse(slug) {
+  const r = await api(`/api/courses/${slug}/enroll`, 'POST', {});
+  if (r.next_lesson) location.hash = `#/lessons/${r.next_lesson.slug}`;
+  else route();
+}
 
 const hintCache = {};
 async function actHint(slug, which) {
@@ -734,7 +874,8 @@ async function actDelMistake(id) { await api('/api/mistakes/' + id, 'DELETE'); r
 
 /* ================= Router ================= */
 const pageMap = {
-  'dashboard': pageDashboard, 'roadmap': pageRoadmap, 'challenges': pageChallenges,
+  'dashboard': pageDashboard, 'courses': pageCourses, 'my-learning': pageMyLearning,
+  'roadmap': pageRoadmap, 'challenges': pageChallenges,
   'playground': pagePlayground, 'projects': pageProjects, 'notes': pageNotes,
   'mistakes': pageMistakes, 'progress': pageProgress, 'weekly': pageWeekly,
   'settings': pageSettings, 'bookmarks': pageSettings,
@@ -758,12 +899,13 @@ async function route() {
     if (seg === 'lessons') el.innerHTML = await pageLesson(sub);
     else if (seg === 'challenge') el.innerHTML = await pageChallenge(sub);
     else if (seg === 'interview') el.innerHTML = await pageInterview(sub);
+    else if (seg === 'courses') el.innerHTML = sub ? await pageCourse(sub) : await pageCourses();
     else if (pageMap[seg]) el.innerHTML = await pageMap[seg]();
     else el.innerHTML = '<h1 class="mega">404</h1><p>Halaman tidak ditemukan.</p>';
   } catch (e) {
     el.innerHTML = `<div class="alert alert-danger"><h4 class="alert-heading">Error</h4><pre class="mb-0" style="white-space:pre-wrap">${esc(e.message)}</pre></div>`;
   }
-  const titles = { dashboard: 'Dashboard', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', interview: 'Interview Prep', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings' };
+  const titles = { dashboard: 'Dashboard', courses: 'Kelas', 'my-learning': 'Kelas Saya', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', interview: 'Interview Prep', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings' };
   document.title = (titles[seg] || 'Belajar Lagi') + ' · Belajar Lagi';
   window.scrollTo(0, 0);
   if (window.feather) feather.replace();

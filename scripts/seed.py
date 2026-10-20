@@ -5,6 +5,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from app.data.challenges_def import CHALLENGES
+from app.data.courses_def import COURSES
 from database.database import get_conn, init_db
 
 # lessons seeded: content lives in content/daily/*.md
@@ -114,6 +115,81 @@ PROJECT = {
 }
 
 
+def _seed_courses(conn):
+    lesson_ids = {
+        row["slug"]: row["id"]
+        for row in conn.execute("SELECT id, slug FROM lessons").fetchall()
+    }
+    mapped = set()
+
+    for course_order, course in enumerate(COURSES, start=1):
+        conn.execute(
+            "INSERT INTO courses(slug,title,description,category,level,icon,order_index,is_published) "
+            "VALUES(?,?,?,?,?,?,?,1) "
+            "ON CONFLICT(slug) DO UPDATE SET "
+            "title=excluded.title, description=excluded.description, "
+            "category=excluded.category, level=excluded.level, icon=excluded.icon, "
+            "order_index=excluded.order_index, is_published=excluded.is_published",
+            (
+                course["slug"], course["title"], course.get("description"),
+                course.get("category"), course.get("level"), course.get("icon"),
+                course_order,
+            ),
+        )
+        course_id = conn.execute(
+            "SELECT id FROM courses WHERE slug=?", (course["slug"],)
+        ).fetchone()["id"]
+
+        # Rebuild the mapping so moving a lesson between modules is deterministic.
+        conn.execute("DELETE FROM course_lessons WHERE course_id=?", (course_id,))
+
+        module_slugs = [m["slug"] for m in course.get("modules", [])]
+        if module_slugs:
+            placeholders = ",".join("?" for _ in module_slugs)
+            conn.execute(
+                f"DELETE FROM course_modules WHERE course_id=? AND slug NOT IN ({placeholders})",
+                (course_id, *module_slugs),
+            )
+        else:
+            conn.execute("DELETE FROM course_modules WHERE course_id=?", (course_id,))
+
+        lesson_order = 0
+        for module_order, module in enumerate(course.get("modules", []), start=1):
+            conn.execute(
+                "INSERT INTO course_modules(course_id,slug,title,description,order_index) "
+                "VALUES(?,?,?,?,?) "
+                "ON CONFLICT(course_id, slug) DO UPDATE SET "
+                "title=excluded.title, description=excluded.description, "
+                "order_index=excluded.order_index",
+                (
+                    course_id, module["slug"], module["title"],
+                    module.get("description"), module_order,
+                ),
+            )
+            module_id = conn.execute(
+                "SELECT id FROM course_modules WHERE course_id=? AND slug=?",
+                (course_id, module["slug"]),
+            ).fetchone()["id"]
+
+            for lesson_slug in module.get("lessons", []):
+                lesson_id = lesson_ids.get(lesson_slug)
+                if lesson_id is None:
+                    raise ValueError(
+                        f"Course {course['slug']} references unknown lesson {lesson_slug}"
+                    )
+                lesson_order += 1
+                conn.execute(
+                    "INSERT INTO course_lessons(course_id,module_id,lesson_id,order_index) "
+                    "VALUES(?,?,?,?)",
+                    (course_id, module_id, lesson_id, lesson_order),
+                )
+                mapped.add(lesson_slug)
+
+    missing = sorted(set(lesson_ids) - mapped)
+    if missing:
+        raise ValueError(f"Lessons not assigned to any course: {', '.join(missing)}")
+
+
 def seed():
     init_db()
     conn = get_conn()
@@ -145,6 +221,7 @@ def seed():
                 conn.execute(
                     "INSERT INTO project_tasks(project_id,stage,title,is_done) VALUES(?,?,?,0)",
                     (pid, stage, title))
+        _seed_courses(conn)
         conn.commit()
         print("seed ok")
     finally:

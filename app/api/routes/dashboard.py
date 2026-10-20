@@ -53,12 +53,25 @@ def dashboard():
 
     challenges = db.all_challenges()
     ch_attempts = sum(db.challenge_stats(c["id"])["attempts"] or 0 for c in challenges)
-    ch_passed = sum(db.challenge_stats(c["id"])["passed"] or 0 for c in challenges)
+    ch_passed = db.passed_challenges_count()
+    current_course = db.course_for_lesson(current["id"]) if current else None
 
     return {
         "overall_pct": round(completed / total * 100),
         "current_phase": current["phase_slug"] if current else None,
-        "current_lesson": {"slug": current["slug"], "title": current["title"]} if current else None,
+        "current_phase_title": PHASE_TITLES.get(current["phase_slug"], current["phase_slug"]) if current else None,
+        "current_lesson": {
+            "slug": current["slug"],
+            "title": current["title"],
+            "course_slug": current_course["slug"] if current_course else None,
+            "course_title": current_course["title"] if current_course else None,
+        } if current else None,
+        "current_course": {
+            "slug": current_course["slug"],
+            "title": current_course["title"],
+            "category": current_course["category"],
+            "level": current_course["level"],
+        } if current_course else None,
         "streak": _streak(set(dates)),
         "lessons_completed": completed,
         "lessons_total": total,

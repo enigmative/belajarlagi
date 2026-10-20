@@ -26,6 +26,51 @@ CREATE TABLE IF NOT EXISTS lesson_progress (
     FOREIGN KEY(lesson_id) REFERENCES lessons(id)
 );
 
+-- Course catalogue: Course -> Module -> Lesson.
+-- lessons stay as-is so existing progress and Markdown files keep working.
+CREATE TABLE IF NOT EXISTS courses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT UNIQUE NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    category TEXT,
+    level TEXT,
+    icon TEXT,
+    order_index INTEGER NOT NULL DEFAULT 0,
+    is_published INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS course_modules (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER NOT NULL,
+    slug TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT,
+    order_index INTEGER NOT NULL DEFAULT 0,
+    UNIQUE(course_id, slug),
+    FOREIGN KEY(course_id) REFERENCES courses(id)
+);
+
+CREATE TABLE IF NOT EXISTS course_lessons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER NOT NULL,
+    module_id INTEGER,
+    lesson_id INTEGER NOT NULL,
+    order_index INTEGER NOT NULL DEFAULT 0,
+    UNIQUE(course_id, lesson_id),
+    FOREIGN KEY(course_id) REFERENCES courses(id),
+    FOREIGN KEY(module_id) REFERENCES course_modules(id),
+    FOREIGN KEY(lesson_id) REFERENCES lessons(id)
+);
+
+CREATE TABLE IF NOT EXISTS course_enrollments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_id INTEGER NOT NULL UNIQUE,
+    enrolled_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_accessed_at TEXT,
+    FOREIGN KEY(course_id) REFERENCES courses(id)
+);
+
 CREATE TABLE IF NOT EXISTS challenges (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     slug TEXT UNIQUE NOT NULL,

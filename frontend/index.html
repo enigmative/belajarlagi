@@ -11,7 +11,7 @@
 <!-- Design system (local, adapted from dimasaulia.my.id) -->
 <link rel="stylesheet" href="/static/design.css?v=8">
 <!-- Bespoke layer: markdown, code output, app components -->
-<link rel="stylesheet" href="/static/style.css?v=9">
+<link rel="stylesheet" href="/static/style.css?v=10">
 </head>
 
 <body class="dashboard">
@@ -22,6 +22,8 @@
   <nav class="sidebar-nav">
     <span class="nav-group">Belajar</span>
     <a href="#/dashboard" data-nav>Dashboard</a>
+    <a href="#/courses" data-nav>Kelas</a>
+    <a href="#/my-learning" data-nav>Kelas Saya</a>
     <a href="#/lessons/day01" data-nav>Belajar Harian</a>
     <a href="#/roadmap" data-nav>Roadmap</a>
     <a href="#/challenges" data-nav>Challenges</a>
@@ -54,6 +56,8 @@
 <div class="mobile-overlay" id="mobile-menu" style="display:none" onclick="closeMobile()"></div>
 <div class="mobile-drawer" id="mobile-drawer" style="display:none">
   <a href="#/dashboard" data-nav onclick="closeMobile()">Dashboard</a>
+  <a href="#/courses" data-nav onclick="closeMobile()">Kelas</a>
+  <a href="#/my-learning" data-nav onclick="closeMobile()">Kelas Saya</a>
   <a href="#/lessons/day01" data-nav onclick="closeMobile()">Belajar Harian</a>
   <a href="#/roadmap" data-nav onclick="closeMobile()">Roadmap</a>
   <a href="#/challenges" data-nav onclick="closeMobile()">Challenges</a>
@@ -103,6 +107,6 @@
 </div>
 
 <script src="/js/vendor/feather.min.js?v=4.29.0"></script>
-<script src="/js/app.js?v=12"></script>
+<script src="/js/app.js?v=13"></script>
 </body>
 </html>

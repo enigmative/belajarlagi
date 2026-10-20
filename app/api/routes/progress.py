@@ -35,4 +35,17 @@ def progress():
 
     total = len(lessons)
     overall = round(len(done) / total * 100) if total else 0
-    return {"overall": overall, "phases": rows}
+    courses = [
+        {
+            "slug": row["slug"],
+            "title": row["title"],
+            "category": row["category"],
+            "pct": round((row["lessons_completed"] or 0) / row["lessons_total"] * 100)
+            if row["lessons_total"] else 0,
+            "done": row["lessons_completed"] or 0,
+            "total": row["lessons_total"] or 0,
+            "enrolled": bool(row["enrolled"]),
+        }
+        for row in db.all_courses()
+    ]
+    return {"overall": overall, "phases": rows, "courses": courses}

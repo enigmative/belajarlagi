@@ -40,7 +40,9 @@ def _execmany(q: str, seq: list[tuple]):
 
 def get_lessons():
     return _rows(
-        "SELECT * FROM lessons ORDER BY phase_slug, order_index"
+        "SELECT l.* FROM lessons l "
+        "LEFT JOIN phases p ON p.slug = l.phase_slug "
+        "ORDER BY COALESCE(p.order_index, 999), l.order_index, l.id"
     )
 
 
@@ -87,6 +89,99 @@ def completed_lesson_ids() -> set:
     return {r["lesson_id"] for r in rows}
 
 
+# ---------- courses ----------
+
+_COURSE_SELECT = (
+    "SELECT c.*, "
+    "COUNT(DISTINCT cl.lesson_id) AS lessons_total, "
+    "COUNT(DISTINCT lp.lesson_id) AS lessons_completed, "
+    "CASE WHEN ce.id IS NULL AND lp.lesson_id IS NULL THEN 0 ELSE 1 END AS enrolled "
+    "FROM courses c "
+    "LEFT JOIN course_lessons cl ON cl.course_id = c.id "
+    "LEFT JOIN (SELECT DISTINCT lesson_id FROM lesson_progress WHERE status='completed') lp "
+    "ON lp.lesson_id = cl.lesson_id "
+    "LEFT JOIN course_enrollments ce ON ce.course_id = c.id "
+)
+
+
+def all_courses(enrolled_only: bool = False):
+    where = "WHERE c.is_published=1"
+    if enrolled_only:
+        where += (
+            " AND (EXISTS(SELECT 1 FROM course_enrollments ce2 WHERE ce2.course_id=c.id)"
+            " OR EXISTS(SELECT 1 FROM course_lessons cl2"
+            " JOIN lesson_progress lp2 ON lp2.lesson_id=cl2.lesson_id"
+            " WHERE cl2.course_id=c.id AND lp2.status='completed'))"
+        )
+    return _rows(
+        _COURSE_SELECT
+        + where
+        + " GROUP BY c.id ORDER BY c.order_index, c.id"
+    )
+
+
+def get_course(slug: str):
+    return _one(
+        _COURSE_SELECT
+        + " WHERE c.slug=? AND c.is_published=1 GROUP BY c.id",
+        (slug,),
+    )
+
+
+def course_modules(course_id: int):
+    return _rows(
+        "SELECT * FROM course_modules WHERE course_id=? ORDER BY order_index, id",
+        (course_id,),
+    )
+
+
+def course_lessons(course_id: int):
+    return _rows(
+        "SELECT cl.order_index AS course_order, cl.module_id, "
+        "l.id, l.slug, l.title, l.phase_slug, l.order_index AS lesson_order, "
+        "CASE WHEN lp.lesson_id IS NULL THEN 0 ELSE 1 END AS completed "
+        "FROM course_lessons cl "
+        "JOIN lessons l ON l.id = cl.lesson_id "
+        "LEFT JOIN (SELECT DISTINCT lesson_id FROM lesson_progress WHERE status='completed') lp "
+        "ON lp.lesson_id = l.id "
+        "WHERE cl.course_id=? ORDER BY cl.order_index, l.id",
+        (course_id,),
+    )
+
+
+def course_for_lesson(lesson_id: int):
+    return _one(
+        "SELECT c.id, c.slug, c.title, c.icon, c.category, c.level, "
+        "cm.slug AS module_slug, cm.title AS module_title, cm.id AS module_id "
+        "FROM course_lessons cl "
+        "JOIN courses c ON c.id = cl.course_id "
+        "LEFT JOIN course_modules cm ON cm.id = cl.module_id "
+        "WHERE cl.lesson_id=? ORDER BY c.order_index LIMIT 1",
+        (lesson_id,),
+    )
+
+
+def course_enrollment(course_id: int):
+    return _one("SELECT * FROM course_enrollments WHERE course_id=?", (course_id,))
+
+
+def enroll_course(course_id: int):
+    _exec(
+        "INSERT INTO course_enrollments(course_id,enrolled_at,last_accessed_at) "
+        "VALUES(?,datetime('now'),datetime('now')) "
+        "ON CONFLICT(course_id) DO UPDATE SET last_accessed_at=datetime('now')",
+        (course_id,),
+    )
+
+
+def touch_course_access_for_lesson(lesson_id: int):
+    _exec(
+        "UPDATE course_enrollments SET last_accessed_at=datetime('now') "
+        "WHERE course_id IN (SELECT course_id FROM course_lessons WHERE lesson_id=?)",
+        (lesson_id,),
+    )
+
+
 # ---------- challenges ----------
 
 def all_challenges():
@@ -105,6 +200,14 @@ def challenge_stats(challenge_id: int):
         "FROM challenge_attempts WHERE challenge_id=?",
         (challenge_id,),
     )
+
+
+def passed_challenges_count() -> int:
+    row = _one(
+        "SELECT COUNT(DISTINCT challenge_id) AS c FROM challenge_attempts "
+        "WHERE result='passed'"
+    )
+    return row["c"]
 
 
 def add_attempt(challenge_id, attempt_number, result, execution_time, hints_used, code):
