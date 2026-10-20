@@ -5,7 +5,9 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-DB_PATH = os.path.join(ROOT, "learning.db")
+DB_PATH = os.path.abspath(
+    os.environ.get("BELAJAR_LAGI_DB") or os.path.join(ROOT, "learning.db")
+)
 SCHEMA_PATH = os.path.join(ROOT, "database", "schema.sql")
 
 
