@@ -88,7 +88,7 @@ $env:BELAJAR_LAGI_DB = "C:\path\ke\database.db"
 
 SQLite hanya cocok untuk **satu worker**. Jangan jalankan beberapa proses uvicorn yang menulis database yang sama.
 
-1. Siapkan database dan admin pertama:
+### 1. Siapkan database (fresh) dan admin pertama
 
 ```bash
 export BELAJAR_LAGI_DB=/srv/belajar-lagi/learning.db
@@ -96,12 +96,23 @@ python scripts/seed.py
 python scripts/manage_users.py setup-admin --email admin@example.com --name Admin
 ```
 
-2. Jalankan di belakang reverse proxy HTTPS, bukan langsung terekspos:
+`seed.py` membuat katalog kelas/lesson (68 lesson) tanpa progres. Semua user mulai dari 0%.
+
+### 2. Siapkan sandbox Docker (untuk Playground & Challenges)
+
+```bash
+docker pull python:3.11-slim
+docker version   # pastikan daemon jalan dan user app bisa mengakses socket
+```
+
+Runner menjalankan kode user di container sekali pakai yang diperkeras: `--network none`, `--cap-drop ALL`, `--read-only`, batas memori/CPU, tanpa akses jaringan.
+
+### 3. Jalankan di belakang reverse proxy HTTPS
 
 ```bash
 export BELAJAR_LAGI_HTTPS=1
-# opsional: matikan eksekusi kode sebelum runner benar-benar disandbox
-# export BELAJAR_LAGI_RUNNER=0
+export BELAJAR_LAGI_RUNNER=1
+export BELAJAR_LAGI_RUNNER_BACKEND=docker
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
 
@@ -112,11 +123,15 @@ Contoh systemd (ringkas):
 WorkingDirectory=/srv/belajar-lagi
 Environment=BELAJAR_LAGI_DB=/srv/belajar-lagi/learning.db
 Environment=BELAJAR_LAGI_HTTPS=1
+Environment=BELAJAR_LAGI_RUNNER=1
+Environment=BELAJAR_LAGI_RUNNER_BACKEND=docker
 ExecStart=/srv/belajar-lagi/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 Restart=on-failure
 ```
 
-3. Backup konsisten (aman meskipun server berjalan, memakai SQLite backup API):
+### 4. Backup konsisten
+
+Aman meskipun server berjalan (memakai SQLite backup API):
 
 ```bash
 python scripts/backup_db.py
@@ -125,7 +140,18 @@ python scripts/backup_db.py --output /srv/backups/belajar-lagi-$(date +%F).db
 
 Folder `backups/` dan `learning.db` sudah di-ignore Git. Jangan commit database atau backup.
 
-4. Sebelum membuka akses publik, baca peringatan **Security (code runner)** di bawah. Endpoint runner menjalankan Python dan belum memakai sandbox container.
+### 5. Buat akun teman
+
+```bash
+python scripts/manage_users.py create --email teman@example.com --name "Nama Teman"
+```
+
+### Catatan runner
+
+- `BELAJAR_LAGI_RUNNER=0` mematikan eksekusi kode total.
+- `BELAJAR_LAGI_RUNNER_BACKEND=subprocess` hanya untuk dev lokal (tidak aman).
+- `BELAJAR_LAGI_RUNNER_BACKEND=docker` adalah pilihan aman untuk server.
+- Detail lengkap ada di **Security (code runner)** di bawah.
 
 ## Project structure
 
@@ -180,7 +206,7 @@ Halaman **Kelas** menampilkan katalog dan filter kategori. Halaman detail kelas 
 
 1. Klik **Start Challenge** di halaman `/challenges`.
 2. Pikirkan dan tulis fungsi `solve(...)` sendiri.
-3. Tekan **Run & Test**. Sistem menjalankan kode lewat runner lokal dengan timeout, temp dir, dan `-I`, lalu mengetes **hidden test case**.
+3. Tekan **Run & Test**. Sistem menjalankan kode lewat runner (di server: sandbox Docker; di dev lokal: `subprocess` dengan `-I`), lalu mengetes **hidden test case**.
 4. Lihat hasil pass/fail + expected vs received.
 5. Gunakan **Hint 1 / Hint 2** jika buntu — solusi penuh **tidak** ditampilkan di frontend.
 
@@ -200,14 +226,24 @@ Semua statistik di dashboard/progress **berasal dari data nyata** dan dihitung t
 
 ## Security (code runner)
 
-- Eksekusi Python lewat `subprocess` dengan mode isolasi `-I` di temporary directory.
-- Timeout 5 detik, limit output, tanpa `shell=True`, tanpa arbitrary shell command.
-- Challenge solution & hidden tests disimpan di backend, bukan frontend.
+Runner punya dua backend, dipilih lewat `BELAJAR_LAGI_RUNNER_BACKEND`:
+
+- `subprocess` (default, khusus dev lokal): menjalankan kode di interpreter server dengan mode isolasi `-I`. **Bukan sandbox** — `-I` tidak membatasi akses filesystem, network, memori, atau CPU. Jangan dipakai untuk user yang tidak dipercaya.
+- `docker` (untuk server): menjalankan kode di container sekali pakai yang diperkeras:
+  - `--network none` (tanpa internet)
+  - `--cap-drop ALL`, `--read-only`, `--security-opt no-new-privileges`
+  - `--memory 128m --memory-swap 128m --cpus 0.5 --pids-limit 64`
+  - `--user 1000:1000`, `--pull=never`
+  - timeout 20 detik, batas output 10.000 karakter
+- `BELAJAR_LAGI_RUNNER=0` mematikan eksekusi kode total. Playground dan submit challenge mengembalikan error tanpa menjalankan kode.
+
+Catatan keamanan:
+
+- Kalau `backend=docker` tapi Docker tidak tersedia, server **menolak** menjalankan kode (tidak diam-diam fallback ke `subprocess`).
+- Akses ke Docker socket itu kuat: app yang bisa memanggil Docker secara teori bisa mount filesystem host. Sandbox Docker jauh lebih aman dari `subprocess`, tapi bukan jaminan absolut. Untuk isolasi lebih kuat, pakai runtime gVisor (`runsc`) atau rootless Docker.
+- Challenge solution & hidden tests tetap disimpan di backend, bukan frontend.
 - `eval()` tidak digunakan untuk menjalankan kode user.
-- **Ini bukan sandbox sebenarnya.** `-I` tidak membatasi akses filesystem, network, memori, atau CPU. User yang sudah login masih bisa menjalankan kode Python berbahaya di mesin server.
-- Untuk sekarang akun hanya dibuat admin, jadi runner cocok untuk lingkaran terpercaya. **Jangan membuka pendaftaran publik atau server ke internet luas sebelum runner diganti dengan container/worker terisolasi** (Docker, gVisor, atau layanan eksekusi terpisah).
-- Kill switch: set `BELAJAR_LAGI_RUNNER=0` untuk mematikan eksekusi kode di seluruh server. Playground dan submit challenge akan mengembalikan error tanpa menjalankan kode.
-- Sampai runner aman, opsi paling aman adalah menonaktifkan endpoint `/api/playground/run` dan submit challenge di reverse proxy untuk user publik, atau membatasi akses server.
+- Tanpa sandbox, opsi paling aman adalah `BELAJAR_LAGI_RUNNER=0` atau menonaktifkan endpoint `/api/playground/run` dan submit challenge di reverse proxy.
 
 ## Login & cookie
 
