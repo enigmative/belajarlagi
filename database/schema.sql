@@ -58,6 +58,15 @@ CREATE TABLE IF NOT EXISTS learning_sessions (
     minutes INTEGER NOT NULL DEFAULT 0
 );
 
+-- Interview Prep: status per soal (unseen / wrong / correct)
+CREATE TABLE IF NOT EXISTS interview_progress (
+    question_id TEXT PRIMARY KEY,
+    status TEXT NOT NULL CHECK(status IN ('unseen','wrong','correct')),
+    attempts INTEGER NOT NULL DEFAULT 0,
+    last_choice TEXT,
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,

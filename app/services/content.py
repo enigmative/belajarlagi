@@ -186,12 +186,21 @@ ROADMAP = [
             {"title": "Tracing, Monitoring & Alerting", "lesson": "obs-tracing-alerts"},
         ],
     },
+    {
+        "name": "Interview Prep — Sprint 3 Hari",
+        "phase": "interview",
+        "topics": [
+            {"title": "Day 1 — Java & Membaca Kode", "lesson": "interview-day1"},
+            {"title": "Day 2 — Spring Boot & JavaScript", "lesson": "interview-day2"},
+            {"title": "Day 3 — React, Live Coding & Interview", "lesson": "interview-day3"},
+        ],
+    },
 ]
 
 
 def load_markdown(slug: str) -> str | None:
     for folder in ("daily", "python", "php", "javascript", "database",
-                   "software_engineering", "codeigniter", "laravel"):
+                   "software_engineering", "codeigniter", "laravel", "interview"):
         path = os.path.join(CONTENT_DIR, folder, f"{slug}.md")
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as f:

@@ -7,6 +7,7 @@ router = APIRouter()
 PHASE_TITLES = {
     "python": "Python", "php": "PHP", "sql": "SQL", "codeigniter": "CodeIgniter",
     "laravel": "Laravel", "javascript": "JavaScript", "se": "Software Engineering",
+    "interview": "Interview Prep",
 }
 
 

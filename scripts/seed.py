@@ -61,6 +61,10 @@ LESSONS = [
     {"slug": "js-dom", "title": "JavaScript — DOM & Events", "phase": "javascript", "order": 502, "file": "javascript/js-dom.md"},
     {"slug": "js-async", "title": "JavaScript — Async, Fetch, Promise, JSON", "phase": "javascript", "order": 503, "file": "javascript/js-async.md"},
     {"slug": "js-framework", "title": "Frontend Framework — Vue & React", "phase": "javascript", "order": 504, "file": "javascript/js-framework.md"},
+    # Interview Prep — sprint 3 hari
+    {"slug": "interview-day1", "title": "Interview Day 1 — Java & Membaca Kode", "phase": "interview", "order": 701, "file": "interview/interview-day1.md"},
+    {"slug": "interview-day2", "title": "Interview Day 2 — Spring Boot & JavaScript", "phase": "interview", "order": 702, "file": "interview/interview-day2.md"},
+    {"slug": "interview-day3", "title": "Interview Day 3 — React, Live Coding & Interview", "phase": "interview", "order": 703, "file": "interview/interview-day3.md"},
     # Software Engineering (Level 16-23)
     {"slug": "sec-auth", "title": "Security — Auth, Session, Cookie, Password", "phase": "se", "order": 601, "file": "software_engineering/sec-auth.md"},
     {"slug": "sec-attacks", "title": "Security — CSRF, XSS, SQL Injection", "phase": "se", "order": 602, "file": "software_engineering/sec-attacks.md"},
@@ -90,6 +94,7 @@ PHASES = [
     {"slug": "laravel", "title": "Laravel", "order": 5},
     {"slug": "javascript", "title": "JavaScript", "order": 6},
     {"slug": "se", "title": "Software Engineering", "order": 7},
+    {"slug": "interview", "title": "Interview Prep", "order": 8},
 ]
 
 PROJECT = {

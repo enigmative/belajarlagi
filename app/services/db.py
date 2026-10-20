@@ -134,6 +134,34 @@ def distinct_dates():
     return [r["date"] for r in _rows("SELECT DISTINCT date FROM learning_sessions")]
 
 
+# ---------- interview prep ----------
+
+def interview_progress_all() -> dict:
+    rows = _rows("SELECT * FROM interview_progress")
+    return {r["question_id"]: r for r in rows}
+
+
+def interview_progress(question_id: str):
+    return _one("SELECT * FROM interview_progress WHERE question_id=?", (question_id,))
+
+
+def set_interview_status(question_id: str, status: str, choice: str | None = None):
+    _exec(
+        "INSERT INTO interview_progress(question_id,status,attempts,last_choice,updated_at) "
+        "VALUES(?,?,1,?,datetime('now')) "
+        "ON CONFLICT(question_id) DO UPDATE SET "
+        "status=excluded.status, "
+        "attempts=interview_progress.attempts + 1, "
+        "last_choice=COALESCE(excluded.last_choice, interview_progress.last_choice), "
+        "updated_at=excluded.updated_at",
+        (question_id, status, choice),
+    )
+
+
+def reset_interview_status(question_id: str):
+    _exec("DELETE FROM interview_progress WHERE question_id=?", (question_id,))
+
+
 # ---------- notes / mistakes ----------
 
 def list_notes():

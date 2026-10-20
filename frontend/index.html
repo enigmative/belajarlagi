@@ -1,172 +1,110 @@
 <!DOCTYPE html>
-<html lang="id" data-textdirection="ltr" data-theme="light">
+<html lang="id" data-textdirection="ltr">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
 <title>Belajar Lagi</title>
 <link rel="shortcut icon" type="image/x-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
 
-<!-- BEGIN: Vendor CSS -->
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/vendors/css/vendors.min.css">
-<!-- END: Vendor CSS -->
-
-<!-- BEGIN: Theme CSS -->
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/bootstrap.css">
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/bootstrap-extended.css">
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/colors.css">
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/components.css">
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/themes/dark-layout.css">
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/themes/bordered-layout.css">
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/themes/semi-dark-layout.css">
-<!-- END: Theme CSS -->
-
-<!-- BEGIN: Page CSS -->
-<link rel="stylesheet" href="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/css/core/menu/menu-types/vertical-menu.css">
-<!-- END: Page CSS -->
-
-<!-- BEGIN: Custom CSS -->
-<link rel="stylesheet" href="/static/style.css">
-<!-- END: Custom CSS -->
+<!-- Design system (local, adapted from dimasaulia.my.id) -->
+<link rel="stylesheet" href="/static/design.css?v=8">
+<!-- Bespoke layer: markdown, code output, app components -->
+<link rel="stylesheet" href="/static/style.css?v=8">
 </head>
 
-<body class="vertical-layout vertical-menu-modern  navbar-floating footer-static  " data-open="click" data-menu="vertical-menu-modern" data-col="">
+<body class="dashboard">
 
-<!-- BEGIN: Header -->
-<nav class="header-navbar navbar navbar-expand-lg align-items-center floating-nav navbar-light navbar-shadow container-xxl">
-  <div class="navbar-container d-flex content">
-    <div class="bookmark-wrapper d-flex align-items-center">
-      <ul class="nav navbar-nav d-xl-none">
-        <li class="nav-item"><a class="nav-link menu-toggle" href="javascript:void(0);"><i class="ficon" data-feather="menu"></i></a></li>
-      </ul>
-      <ul class="nav navbar-nav d-none d-xl-flex">
-        <li class="nav-item"><a class="nav-link" href="#/dashboard"><i class="ficon" data-feather="home"></i></a></li>
-        <li class="nav-item"><a class="nav-link" href="#/roadmap"><i class="ficon" data-feather="map"></i></a></li>
-        <li class="nav-item"><a class="nav-link" href="#/challenges"><i class="ficon" data-feather="code"></i></a></li>
-      </ul>
-    </div>
-    <ul class="nav navbar-nav align-items-center ms-auto">
-      <li class="nav-item d-none d-lg-block"><a class="nav-link" href="javascript:void(0);" id="theme-toggle" title="Ganti tema"><i class="ficon" data-feather="moon"></i></a></li>
-      <li class="nav-item nav-search"><a class="nav-link nav-link-search" href="javascript:void(0);" id="search-btn"><i class="ficon" data-feather="search"></i></a>
-        <div class="search-input">
-          <div class="search-input-icon"><i data-feather="search"></i></div>
-          <input class="form-control input" type="text" placeholder="Cari materi (Ctrl+K)..." tabindex="-1" data-search="search" id="navbar-search">
-          <div class="search-input-close"><i data-feather="x"></i></div>
-        </div>
-      </li>
-      <li class="nav-item dropdown dropdown-user">
-        <a class="nav-link dropdown-toggle dropdown-user-link" href="javascript:void(0);" id="dropdown-user" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <div class="user-nav d-sm-flex d-none"><span class="user-name fw-bolder">Belajar</span><span class="user-status">Lagi</span></div>
-          <span class="avatar"><span class="avatar-content bg-primary">BL</span></span>
-        </a>
-        <div class="dropdown-menu dropdown-menu-end">
-          <a class="dropdown-item" href="#/progress"><i class="me-50" data-feather="bar-chart-2"></i> Progress</a>
-          <a class="dropdown-item" href="#/settings"><i class="me-50" data-feather="settings"></i> Settings</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#/dashboard"><i class="me-50" data-feather="power"></i> Dashboard</a>
-        </div>
-      </li>
-    </ul>
+<!-- BEGIN: Sidebar (left) -->
+<aside class="sidebar" id="sidebar">
+  <a href="#/dashboard" class="brand" style="font-family:abcplus,helvetica,sans-serif !important;font-variation-settings:'MONO' 0, 'wght' 700">Belajar Lagi</a>
+  <nav class="sidebar-nav">
+    <span class="nav-group">Belajar</span>
+    <a href="#/dashboard" data-nav>Dashboard</a>
+    <a href="#/lessons/day01" data-nav>Belajar Harian</a>
+    <a href="#/roadmap" data-nav>Roadmap</a>
+    <a href="#/challenges" data-nav>Challenges</a>
+    <a href="#/interview" data-nav>Interview</a>
+    <a href="#/playground" data-nav>Playground</a>
+
+    <span class="nav-group">Berkarya</span>
+    <a href="#/projects" data-nav>Projects</a>
+    <a href="#/notes" data-nav>Notes</a>
+    <a href="#/mistakes" data-nav>Mistakes</a>
+    <a href="#/progress" data-nav>Progress</a>
+    <a href="#/weekly" data-nav>Weekly</a>
+
+    <span class="nav-group">Sistem</span>
+    <a href="#/settings" data-nav>Settings</a>
+  </nav>
+  <div class="sidebar-foot">
+    <button class="ghost small" onclick="toggleTheme()" id="theme-toggle">Theme</button>
   </div>
-</nav>
-<!-- END: Header -->
+</aside>
 
-<!-- BEGIN: Main Menu -->
-<div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true" id="sidebar">
-  <div class="navbar-header">
-    <ul class="nav navbar-nav flex-row">
-      <li class="nav-item me-auto">
-        <a class="navbar-brand" href="#/dashboard">
-          <span class="brand-logo">
-            <svg viewbox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path class="text-primary" d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-            </svg>
-          </span>
-          <h2 class="brand-text">Belajar Lagi</h2>
-        </a>
-      </li>
-      <li class="nav-item nav-toggle">
-        <a class="nav-link modern-nav-toggle pe-0" data-bs-toggle="collapse" href="javascript:void(0);">
-          <i class="d-block d-xl-none text-primary toggle-icon font-medium-4" data-feather="x"></i>
-          <i class="d-none d-xl-block collapse-toggle-icon font-medium-4 text-primary" data-feather="disc" data-ticon="disc"></i>
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div class="shadow-bottom"></div>
-  <div class="main-menu-content">
-    <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
-      <li class=" navigation-header"><span data-i18n="Belajar">Belajar</span></li>
-      <li class=" nav-item active"><a class="d-flex align-items-center" href="#/dashboard" data-nav><i data-feather="home"></i><span class="menu-title text-truncate" data-i18n="Dashboard">Dashboard</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/lessons/day01" data-nav><i data-feather="book-open"></i><span class="menu-title text-truncate" data-i18n="Learn">Belajar Harian</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/roadmap" data-nav><i data-feather="map"></i><span class="menu-title text-truncate" data-i18n="Roadmap">Roadmap</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/challenges" data-nav><i data-feather="code"></i><span class="menu-title text-truncate" data-i18n="Challenges">Challenges</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/playground" data-nav><i data-feather="terminal"></i><span class="menu-title text-truncate" data-i18n="Playground">Playground</span></a></li>
-
-      <li class=" navigation-header"><span data-i18n="Berkarya">Berkarya</span></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/projects" data-nav><i data-feather="layout"></i><span class="menu-title text-truncate" data-i18n="Projects">Projects</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/notes" data-nav><i data-feather="file-text"></i><span class="menu-title text-truncate" data-i18n="Notes">Notes</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/mistakes" data-nav><i data-feather="alert-triangle"></i><span class="menu-title text-truncate" data-i18n="Mistakes">Mistake Journal</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/progress" data-nav><i data-feather="bar-chart-2"></i><span class="menu-title text-truncate" data-i18n="Progress">Progress</span></a></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/weekly" data-nav><i data-feather="calendar"></i><span class="menu-title text-truncate" data-i18n="Weekly">Weekly Review</span></a></li>
-
-      <li class=" navigation-header"><span data-i18n="Sistem">Sistem</span></li>
-      <li class=" nav-item"><a class="d-flex align-items-center" href="#/settings" data-nav><i data-feather="settings"></i><span class="menu-title text-truncate" data-i18n="Settings">Settings</span></a></li>
-    </ul>
-  </div>
+<!-- Mobile top bar -->
+<div class="mobile-bar">
+  <button class="ghost" id="menu-toggle">Menu</button>
+  <a href="#/dashboard" class="brand" style="font-family:abcplus,helvetica,sans-serif !important;font-variation-settings:'MONO' 0, 'wght' 700">Belajar Lagi</a>
+  <button class="ghost" id="theme-toggle-m" onclick="toggleTheme()">Theme</button>
 </div>
-<!-- END: Main Menu -->
+
+<!-- Mobile menu overlay -->
+<div class="mobile-overlay" id="mobile-menu" style="display:none" onclick="closeMobile()"></div>
+<div class="mobile-drawer" id="mobile-drawer" style="display:none">
+  <a href="#/dashboard" data-nav onclick="closeMobile()">Dashboard</a>
+  <a href="#/lessons/day01" data-nav onclick="closeMobile()">Belajar Harian</a>
+  <a href="#/roadmap" data-nav onclick="closeMobile()">Roadmap</a>
+  <a href="#/challenges" data-nav onclick="closeMobile()">Challenges</a>
+  <a href="#/interview" data-nav onclick="closeMobile()">Interview</a>
+  <a href="#/playground" data-nav onclick="closeMobile()">Playground</a>
+  <a href="#/projects" data-nav onclick="closeMobile()">Projects</a>
+  <a href="#/notes" data-nav onclick="closeMobile()">Notes</a>
+  <a href="#/mistakes" data-nav onclick="closeMobile()">Mistakes</a>
+  <a href="#/progress" data-nav onclick="closeMobile()">Progress</a>
+  <a href="#/weekly" data-nav onclick="closeMobile()">Weekly</a>
+  <a href="#/settings" data-nav onclick="closeMobile()">Settings</a>
+</div>
 
 <!-- BEGIN: Content -->
-<div class="app-content content">
-  <div class="content-wrapper container-xxl p-0">
-    <div class="content-header row"><div class="content-header-left col-12 col-md-9 mb-2">
-      <h2 class="content-header-title float-start mb-0" id="page-title">Dashboard</h2>
-      <div class="breadcrumb-wrapper"></div>
-    </div></div>
-    <div class="content-body">
-      <div id="content"><!-- rendered by JS --></div>
-    </div>
-  </div>
-</div>
-<!-- END: Content -->
+<main id="app">
+  <div id="content"><!-- rendered by JS --></div>
+</main>
 
 <!-- BEGIN: Footer -->
-<footer class="footer footer-static footer-light">
-  <p class="clearfix mb-0"><span class="float-md-start d-block d-md-inline-block mt-25">BELAJAR LAGI · TRY FIRST, THINK BEFORE ASKING AI</span><span class="float-md-end d-none d-md-block">Dibuat untuk belajar mandiri</span></p>
+<footer id="footer">
+  <div style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--char2);padding:var(--line) var(--char2);border-top:1px solid rgba(var(--black-rgb),.1)">
+    <div>
+      <div class="logo-text">Belajar Lagi</div>
+      <div class="text-muted small" style="margin-top:.25rem">Try first. Think before asking AI.</div>
+    </div>
+    <div class="footer-links">
+      <a href="#/dashboard">Dashboard</a>
+      <a href="#/roadmap">Roadmap</a>
+      <a href="#/progress">Progress</a>
+      <a href="#/settings">Settings</a>
+    </div>
+    <div class="text-muted small" id="footer-time"></div>
+  </div>
 </footer>
-<!-- END: Footer -->
-
-<button class="btn btn-primary btn-icon scroll-top" type="button" id="scroll-top"><i data-feather="arrow-up"></i></button>
 
 <!-- Search Modal -->
-<div id="search-modal" class="modal fade" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title">Cari materi</h5>
-        <button type="button" class="btn-close" onclick="closeSearch()"></button></div>
-      <div class="modal-body">
-        <input id="search-input" class="form-control mb-1" type="text" placeholder="Cari materi... (misal: python dictionary, SQL JOIN)">
-        <ul id="search-results" class="list-group"></ul>
-      </div>
+<div id="search-modal" class="modal" style="display:none">
+  <div class="backdrop" onclick="closeSearch()"></div>
+  <div class="content">
+    <div>
+      <h2>Cari materi</h2>
+      <input id="search-input" type="text" placeholder="Cari materi... (misal: python dictionary, SQL JOIN)">
+      <ul id="search-results"></ul>
+      <div class="buttons"><button class="small" onclick="closeSearch()">Tutup</button></div>
     </div>
   </div>
 </div>
 
-<!-- BEGIN: Vendor JS -->
-<script src="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/vendors/js/vendors.min.js"></script>
-<!-- END: Vendor JS -->
-
-<!-- BEGIN: Theme + Menu JS -->
-<script src="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/js/core/app-menu.js"></script>
-<script src="https://bhms3sg.s3.ap-southeast-1.amazonaws.com/assets/plug/vuexy/app-assets/js/core/app.js"></script>
-<!-- END: Theme + Menu JS -->
-
-<!-- Belajar Lagi SPA -->
-<script src="/js/app.js"></script>
+<script src="https://unpkg.com/feather-icons@4.29.0/dist/feather.min.js"></script>
+<script src="/js/app.js?v=11"></script>
 </body>
 </html>
