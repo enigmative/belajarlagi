@@ -1,12 +1,7 @@
 """Tests for the course catalogue and course-aware lesson navigation."""
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
 
 
-def test_course_catalogue_has_all_courses():
+def test_course_catalogue_has_all_courses(client):
     r = client.get("/api/courses")
     assert r.status_code == 200
     data = r.json()
@@ -16,7 +11,7 @@ def test_course_catalogue_has_all_courses():
     assert "Programming" in data["categories"]
 
 
-def test_course_detail_groups_lessons_into_modules():
+def test_course_detail_groups_lessons_into_modules(client):
     r = client.get("/api/courses/python-fundamentals")
     assert r.status_code == 200
     course = r.json()
@@ -28,14 +23,14 @@ def test_course_detail_groups_lessons_into_modules():
     assert course["next_lesson"]["slug"] in slugs
 
 
-def test_lesson_uses_course_navigation():
+def test_lesson_uses_course_navigation(client):
     lesson = client.get("/api/lessons/day02").json()
     assert lesson["course"]["slug"] == "python-fundamentals"
     assert lesson["prev"]["slug"] == "day01"
     assert lesson["next"]["slug"] == "day03"
 
 
-def test_enroll_and_my_learning():
+def test_enroll_and_my_learning(client):
     r = client.post("/api/courses/sql-for-developers/enroll")
     assert r.status_code == 200
     assert r.json()["course"] == "sql-for-developers"
@@ -47,7 +42,7 @@ def test_enroll_and_my_learning():
     assert detail["enrolled"] is True
 
 
-def test_finishing_a_lesson_adds_course_to_my_learning():
+def test_finishing_a_lesson_adds_course_to_my_learning(client):
     assert client.post("/api/lessons/day01/complete").status_code == 200
     my = client.get("/api/my-learning").json()
     course = next(c for c in my["courses"] if c["slug"] == "python-fundamentals")
@@ -56,12 +51,12 @@ def test_finishing_a_lesson_adds_course_to_my_learning():
     assert course["lessons_completed"] >= 1
 
 
-def test_dashboard_points_at_current_course():
+def test_dashboard_points_at_current_course(client):
     dashboard = client.get("/api/dashboard").json()
     assert dashboard["current_course"]["slug"] == "python-fundamentals"
     assert dashboard["current_lesson"]["course_slug"] == "python-fundamentals"
 
 
-def test_unknown_course_returns_404():
+def test_unknown_course_returns_404(client):
     assert client.get("/api/courses/tidak-ada").status_code == 404
     assert client.post("/api/courses/tidak-ada/enroll").status_code == 404

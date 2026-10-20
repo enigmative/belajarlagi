@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
+from app.api.deps import current_user, optional_user
 from app.services import db
 
 router = APIRouter()
@@ -23,10 +24,10 @@ def _course_summary(row: dict) -> dict:
     }
 
 
-def _course_payload(row: dict) -> dict:
+def _course_payload(row: dict, user_id: int = 0) -> dict:
     course = _course_summary(row)
     modules = []
-    lessons = db.course_lessons(row["id"])
+    lessons = db.course_lessons(user_id, row["id"])
     by_module = {}
     for lesson in lessons:
         by_module.setdefault(lesson["module_id"], []).append({
@@ -54,33 +55,35 @@ def _course_payload(row: dict) -> dict:
         {"slug": next_lesson["slug"], "title": next_lesson["title"]}
         if next_lesson else None
     )
-    course["enrolled"] = bool(course["enrolled"]) or bool(db.course_enrollment(row["id"]))
     return course
 
 
 @router.get("/api/courses")
-def list_courses():
-    rows = db.all_courses()
+def list_courses(user: dict | None = Depends(optional_user)):
+    user_id = user["id"] if user else 0
+    rows = db.all_courses(user_id)
     courses = [_course_summary(row) for row in rows]
     categories = sorted({c["category"] for c in courses if c["category"]})
     return {"courses": courses, "total": len(courses), "categories": categories}
 
 
 @router.get("/api/courses/{slug}")
-def get_course(slug: str):
-    row = db.get_course(slug)
+def get_course(slug: str, user: dict | None = Depends(optional_user)):
+    user_id = user["id"] if user else 0
+    row = db.get_course(user_id, slug)
     if not row:
         raise HTTPException(404, "course not found")
-    return _course_payload(row)
+    return _course_payload(row, user_id)
 
 
 @router.post("/api/courses/{slug}/enroll")
-def enroll_course(slug: str):
-    row = db.get_course(slug)
+def enroll_course(slug: str, user: dict = Depends(current_user)):
+    row = db.get_course(user["id"], slug)
     if not row:
         raise HTTPException(404, "course not found")
-    db.enroll_course(row["id"])
-    payload = _course_payload(row)
+    db.enroll_course(user["id"], row["id"])
+    row = db.get_course(user["id"], slug)
+    payload = _course_payload(row, user["id"])
     return {
         "ok": True,
         "course": payload["slug"],
@@ -89,8 +92,8 @@ def enroll_course(slug: str):
 
 
 @router.get("/api/my-learning")
-def my_learning():
-    rows = db.all_courses(enrolled_only=True)
+def my_learning(user: dict = Depends(current_user)):
+    rows = db.all_courses(user["id"], enrolled_only=True)
     return {
         "courses": [_course_summary(row) for row in rows],
         "total": len(rows),

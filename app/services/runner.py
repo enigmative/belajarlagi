@@ -9,7 +9,18 @@ TIMEOUT_S = 5
 MAX_OUTPUT = 10000
 
 
+def _disabled() -> bool:
+    value = os.environ.get("BELAJAR_LAGI_RUNNER", "1").strip().lower()
+    return value in {"0", "false", "off", "no"}
+
+
 def run_python(code: str) -> dict:
+    if _disabled():
+        return {
+            "status": "error",
+            "error": "Code runner dinonaktifkan oleh server (BELAJAR_LAGI_RUNNER=0).",
+            "output": "",
+        }
     code = code or ""
 
     # ponytail: best-effort sandbox on localhost via -I (isolated) + -B (no

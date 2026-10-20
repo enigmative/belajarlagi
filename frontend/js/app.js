@@ -80,11 +80,120 @@ function inline(s) {
 }
 
 async function api(path, method = 'GET', body) {
-  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  const opts = {
+    method,
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+  };
   if (body !== undefined) opts.body = JSON.stringify(body);
   const r = await fetch(path, opts);
-  if (!r.ok) throw new Error(await r.text());
+  if (!r.ok) {
+    const text = await r.text();
+    let message = text;
+    try {
+      const data = JSON.parse(text);
+      if (data && data.detail) {
+        message = typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail);
+      }
+    } catch (_) { /* keep raw text */ }
+    const err = new Error(message || `HTTP ${r.status}`);
+    err.status = r.status;
+    throw err;
+  }
   return r.json();
+}
+
+/* ================= Auth state ================= */
+let currentUser = null;
+let authLoaded = false;
+
+async function loadCurrentUser() {
+  try {
+    const r = await fetch('/api/auth/me', { credentials: 'same-origin' });
+    currentUser = r.ok ? (await r.json()).user : null;
+  } catch (_) {
+    currentUser = null;
+  }
+  authLoaded = true;
+  renderUserBox();
+}
+
+function renderUserBox() {
+  const html = currentUser
+    ? `<div class="user-meta"><strong>${esc(currentUser.name)}</strong><span>${esc(currentUser.email)}</span></div>
+       <button class="ghost small" onclick="actLogout()">Logout</button>`
+    : `<a class="button small" href="#/login">Masuk</a>`;
+  ['user-box', 'user-box-mobile'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = html;
+  });
+}
+
+function saveNext() {
+  const hash = location.hash || '#/dashboard';
+  if (!hash.startsWith('#/login')) sessionStorage.setItem('bl-next', hash);
+}
+
+function sessionExpired() {
+  if (!currentUser) return;
+  currentUser = null;
+  renderUserBox();
+  saveNext();
+  document.body.classList.add('auth-mode');
+  location.hash = '#/login';
+}
+
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason && event.reason.status === 401) {
+    event.preventDefault();
+    sessionExpired();
+  }
+});
+
+function pageLogin() {
+  return `<div class="auth-page"><div class="card auth-card"><div class="card-body">
+    <div class="auth-brand">Belajar Lagi</div>
+    <h1 class="mega">Masuk</h1>
+    <p class="page-lead">Katalog kelas bisa dilihat tanpa akun. Lesson, progres, dan catatan membutuhkan login.</p>
+    <form class="auth-form" onsubmit="return actLogin(event)">
+      <label>Email<input id="login-email" type="email" autocomplete="username" required autofocus></label>
+      <label>Password<input id="login-password" type="password" autocomplete="current-password" required></label>
+      <div id="login-error" class="alert alert-danger" style="display:none"></div>
+      <button class="button" type="submit">Masuk →</button>
+    </form>
+    <p class="small text-muted" style="margin-top:var(--line)">Akun dibuat oleh admin. Belum punya akun? Hubungi admin.</p>
+    <p class="small"><a href="#/courses">Lihat katalog kelas tanpa masuk →</a></p>
+  </div></div></div>`;
+}
+
+async function actLogin(event) {
+  event.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const box = document.getElementById('login-error');
+  box.style.display = 'none';
+  try {
+    const result = await api('/api/auth/login', 'POST', { email, password });
+    currentUser = result.user;
+    renderUserBox();
+    const next = sessionStorage.getItem('bl-next') || '#/dashboard';
+    sessionStorage.removeItem('bl-next');
+    location.hash = next.startsWith('#/') ? next : '#/dashboard';
+    if (location.hash === next) route();
+  } catch (e) {
+    box.textContent = e.message || 'Gagal masuk.';
+    box.style.display = 'block';
+  }
+  return false;
+}
+
+async function actLogout() {
+  try { await api('/api/auth/logout', 'POST', {}); } catch (_) { /* ignore */ }
+  currentUser = null;
+  sessionStorage.removeItem('bl-next');
+  renderUserBox();
+  closeMobile();
+  location.hash = '#/login';
 }
 
 function barHtml(pct, ok, showLabel = true) {
@@ -236,8 +345,12 @@ async function pageCourses() {
   const filters = categories.map((cat, i) =>
     `<button class="filter-pill ${i === 0 ? 'active' : ''}" data-cat="${escAttr(cat)}" onclick="filterCourses(this.dataset.cat, this)">${esc(cat)}</button>`
   ).join('');
+  const notice = currentUser ? '' : `<div class="alert alert-info" style="margin-bottom:var(--line)">
+    <a href="#/login"><strong>Masuk</strong></a> untuk membuka lesson dan menyimpan progres belajarmu.
+  </div>`;
   return `${pageHeading('Kelas')}
     <p class="page-lead">Pilih kelas, ikuti modulnya, dan selesaikan materinya satu per satu. Progres setiap kelas dihitung terpisah.</p>
+    ${notice}
     <div class="course-filters">${filters}</div>
     <div class="course-grid" id="course-grid">${data.courses.map(courseCard).join('')}</div>`;
 }
@@ -253,7 +366,9 @@ function filterCourses(cat, btn) {
 async function pageCourse(slug) {
   const c = await api(`/api/courses/${slug}`);
   const pct = Number(c.progress_pct || 0);
-  const buttonLabel = c.enrolled ? (pct > 0 ? 'Lanjutkan Belajar' : 'Mulai Kelas') : 'Mulai Kelas';
+  const buttonLabel = !currentUser
+    ? 'Masuk untuk Mulai'
+    : (c.enrolled ? (pct > 0 ? 'Lanjutkan Belajar' : 'Mulai Kelas') : 'Mulai Kelas');
   const action = c.next_lesson
     ? `<button class="button" onclick="actStartCourse('${escAttr(slug)}')">${buttonLabel} →</button>`
     : '';
@@ -279,17 +394,17 @@ async function pageCourse(slug) {
       </div>
     </div>
     <div class="card course-progress-card"><div class="card-body">
-      <div class="course-progress-head"><span>Progres kelas</span><strong>${c.lessons_completed}/${c.lessons_total} · ${pct}%</strong></div>
-      ${barHtml(pct, pct >= 100, false)}
+      <div class="course-progress-head"><span>Progres kelas</span><strong>${currentUser ? `${c.lessons_completed}/${c.lessons_total} · ${pct}%` : 'Masuk untuk menyimpan progres'}</strong></div>
+      ${barHtml(currentUser ? pct : 0, pct >= 100, false)}
     </div></div>
     <div class="course-detail-grid">
       <div class="course-curriculum">${modules || '<p class="text-muted">Belum ada materi.</p>'}</div>
       <aside class="course-aside card"><div class="card-body">
         <div class="course-aside-icon"><i data-feather="${escAttr(c.icon || 'book-open')}"></i></div>
-        <h4 class="card-title">${c.enrolled ? 'Kelas ini ada di daftar belajarmu' : 'Mulai kelas ini'}</h4>
-        <p class="small text-muted">${c.next_lesson ? `Materi berikutnya: ${esc(c.next_lesson.title)}` : 'Semua materi sudah selesai.'}</p>
+        <h4 class="card-title">${!currentUser ? 'Masuk untuk mulai belajar' : (c.enrolled ? 'Kelas ini ada di daftar belajarmu' : 'Mulai kelas ini')}</h4>
+        <p class="small text-muted">${!currentUser ? 'Katalog bisa dilihat tanpa akun. Lesson dan progres membutuhkan login.' : (c.next_lesson ? `Materi berikutnya: ${esc(c.next_lesson.title)}` : 'Semua materi sudah selesai.')}</p>
         ${action}
-        <a class="button outline" href="#/my-learning" style="margin-top:.5rem;display:block;text-align:center">Kelas Saya</a>
+        <a class="button outline" href="${currentUser ? '#/my-learning' : '#/login'}" style="margin-top:.5rem;display:block;text-align:center">${currentUser ? 'Kelas Saya' : 'Masuk'}</a>
       </div></aside>
     </div>`;
 }
@@ -803,7 +918,9 @@ async function pageWeekly() {
 function pageSettings() {
   return `${pageHeading('Settings')}
     <div class="card"><div class="card-body">
-      <p style="margin-bottom:var(--line)">Dark mode tersimpan di browser (localStorage).</p>
+      <p style="margin-bottom:var(--line)">Login sebagai <strong>${esc(currentUser.name)}</strong> (${esc(currentUser.email)}). Hubungi admin untuk reset password.</p>
+      <button class="button outline mb-1" onclick="actLogout()">Logout</button>
+      <p style="margin:var(--line) 0">Dark mode tersimpan di browser (localStorage).</p>
       <button class="button mb-1" onclick="toggleTheme()">Toggle theme</button>
       <hr>
       <h4 class="card-title">AI Usage Policy</h4>
@@ -815,9 +932,23 @@ function pageSettings() {
 async function actComplete(slug) { await api(`/api/lessons/${slug}/complete`, 'POST', {}); route(); }
 
 async function actStartCourse(slug) {
-  const r = await api(`/api/courses/${slug}/enroll`, 'POST', {});
-  if (r.next_lesson) location.hash = `#/lessons/${r.next_lesson.slug}`;
-  else route();
+  if (!currentUser) {
+    sessionStorage.setItem('bl-next', `#/courses/${slug}`);
+    location.hash = '#/login';
+    return;
+  }
+  try {
+    const r = await api(`/api/courses/${slug}/enroll`, 'POST', {});
+    if (r.next_lesson) location.hash = `#/lessons/${r.next_lesson.slug}`;
+    else route();
+  } catch (e) {
+    if (e.status === 401) {
+      sessionStorage.setItem('bl-next', `#/courses/${slug}`);
+      sessionExpired();
+    } else {
+      alert(e.message);
+    }
+  }
 }
 
 const hintCache = {};
@@ -882,11 +1013,26 @@ const pageMap = {
 };
 
 async function route() {
+  if (!authLoaded) return;
   const hash = location.hash.replace(/^#\//, '') || 'dashboard';
   const parts = hash.split('/');
   const seg = parts[0] || 'dashboard';
   const sub = parts[1];
+  const publicRoute = seg === 'courses' || seg === 'login';
 
+  if (seg === 'login' && currentUser) {
+    location.hash = '#/dashboard';
+    return;
+  }
+  if (!currentUser && !publicRoute) {
+    saveNext();
+    document.body.classList.add('auth-mode');
+    location.hash = '#/login';
+    return;
+  }
+
+  document.body.classList.toggle('auth-mode', seg === 'login');
+  document.body.classList.toggle('public-mode', !currentUser && seg === 'courses');
   document.querySelectorAll('.sidebar-nav a.active, .mobile-drawer a.active')
     .forEach(el => el.classList.remove('active'));
   const navID = seg === 'lessons' || seg === 'challenge' ? (seg === 'challenge' ? 'challenges' : seg) : seg;
@@ -896,18 +1042,24 @@ async function route() {
 
   const el = document.getElementById('content');
   try {
-    if (seg === 'lessons') el.innerHTML = await pageLesson(sub);
+    if (seg === 'login') el.innerHTML = pageLogin();
+    else if (seg === 'lessons') el.innerHTML = await pageLesson(sub);
     else if (seg === 'challenge') el.innerHTML = await pageChallenge(sub);
     else if (seg === 'interview') el.innerHTML = await pageInterview(sub);
     else if (seg === 'courses') el.innerHTML = sub ? await pageCourse(sub) : await pageCourses();
     else if (pageMap[seg]) el.innerHTML = await pageMap[seg]();
     else el.innerHTML = '<h1 class="mega">404</h1><p>Halaman tidak ditemukan.</p>';
   } catch (e) {
+    if (e.status === 401) {
+      sessionExpired();
+      return;
+    }
     el.innerHTML = `<div class="alert alert-danger"><h4 class="alert-heading">Error</h4><pre class="mb-0" style="white-space:pre-wrap">${esc(e.message)}</pre></div>`;
   }
-  const titles = { dashboard: 'Dashboard', courses: 'Kelas', 'my-learning': 'Kelas Saya', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', interview: 'Interview Prep', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings' };
+  const titles = { dashboard: 'Dashboard', courses: 'Kelas', login: 'Masuk', 'my-learning': 'Kelas Saya', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', interview: 'Interview Prep', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings' };
   document.title = (titles[seg] || 'Belajar Lagi') + ' · Belajar Lagi';
   window.scrollTo(0, 0);
+  renderUserBox();
   if (window.feather) feather.replace();
   applyTheme();
 }
@@ -934,6 +1086,11 @@ function showModal(show) {
   m.style.display = show ? 'flex' : 'none';
 }
 function openSearch() {
+  if (!currentUser) {
+    saveNext();
+    location.hash = '#/login';
+    return;
+  }
   document.getElementById('search-input').value = '';
   document.getElementById('search-results').innerHTML = '';
   showModal(true);
@@ -948,7 +1105,10 @@ async function doSearch() {
     const res = await api('/api/search?q=' + encodeURIComponent(q));
     ul.innerHTML = res.map(r =>
       `<li><a href="#/lessons/${esc(r.slug)}" onclick="closeSearch()">${esc(r.title)} <span class="text-muted small">(${esc(r.folder)})</span></a></li>`).join('') || '<li class="text-muted">Tidak ada hasil</li>';
-  } catch (e) { ul.innerHTML = '<li class="text-muted">Error</li>'; }
+  } catch (e) {
+    if (e.status === 401) sessionExpired();
+    else ul.innerHTML = '<li class="text-muted">Error</li>';
+  }
 }
 
 function closeMobile() {
@@ -993,5 +1153,11 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeSearch();
 });
 
+async function boot() {
+  await loadCurrentUser();
+  if (!location.hash) location.hash = currentUser ? '#/dashboard' : '#/courses';
+  await route();
+}
+
 applyTheme();
-route();
+boot();

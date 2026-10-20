@@ -1,18 +1,19 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.api.deps import current_user
 from app.services import db, content
 
 router = APIRouter()
 
 
 @router.get("/api/lessons")
-def list_lessons():
+def list_lessons(user: dict = Depends(current_user)):
     return db.get_lessons()
 
 
 @router.get("/api/lessons/{slug}")
-def get_lesson(slug: str):
+def get_lesson(slug: str, user: dict = Depends(current_user)):
     lesson = db.get_lesson(slug)
     if not lesson:
         raise HTTPException(404, "lesson not found")
@@ -21,7 +22,7 @@ def get_lesson(slug: str):
         md = "# (belum ada konten) " + slug
 
     course = db.course_for_lesson(lesson["id"])
-    course_lessons = db.course_lessons(course["id"]) if course else []
+    course_lessons = db.course_lessons(user["id"], course["id"]) if course else []
     if course_lessons:
         idx = next((i for i, l in enumerate(course_lessons) if l["slug"] == slug), None)
         prev = course_lessons[idx - 1] if idx and idx > 0 else None
@@ -59,7 +60,7 @@ def get_lesson(slug: str):
             "progress_pct": round(completed / len(course_lessons) * 100) if course_lessons else 0,
         }
 
-    prog = db.get_progress(lesson["id"])
+    prog = db.get_progress(user["id"], lesson["id"])
     return {
         **lesson,
         "markdown": md,
@@ -75,22 +76,22 @@ class Complete(BaseModel):
 
 
 @router.post("/api/lessons/{slug}/complete")
-def complete_lesson(slug: str):
+def complete_lesson(slug: str, user: dict = Depends(current_user)):
     lesson = db.get_lesson(slug)
     if not lesson:
         raise HTTPException(404, "lesson not found")
-    db.mark_complete(lesson["id"])
+    db.mark_complete(user["id"], lesson["id"])
     course = db.course_for_lesson(lesson["id"])
     if course:
-        db.enroll_course(course["id"])
-    db.touch_course_access_for_lesson(lesson["id"])
-    db.touch_session(__import__("datetime").date.today().isoformat())
+        db.enroll_course(user["id"], course["id"])
+    db.touch_course_access_for_lesson(user["id"], lesson["id"])
+    db.touch_session(user["id"], __import__("datetime").date.today().isoformat())
     return {"ok": True}
 
 
 @router.get("/api/roadmap")
-def roadmap():
-    done = db.completed_lesson_ids()
+def roadmap(user: dict = Depends(current_user)):
+    done = db.completed_lesson_ids(user["id"])
     lessons = {l["slug"]: l for l in db.get_lessons()}
     tree = []
     for group in content.ROADMAP:

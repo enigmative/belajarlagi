@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.deps import current_user
 from app.services import db
 
 router = APIRouter()
@@ -12,9 +13,9 @@ PHASE_TITLES = {
 
 
 @router.get("/api/progress")
-def progress():
+def progress(user: dict = Depends(current_user)):
     lessons = db.get_lessons()
-    done = db.completed_lesson_ids()
+    done = db.completed_lesson_ids(user["id"])
     per_phase = {}
     for l in lessons:
         per_phase.setdefault(l["phase_slug"], {"total": 0, "done": 0})
@@ -46,6 +47,6 @@ def progress():
             "total": row["lessons_total"] or 0,
             "enrolled": bool(row["enrolled"]),
         }
-        for row in db.all_courses()
+        for row in db.all_courses(user["id"])
     ]
     return {"overall": overall, "phases": rows, "courses": courses}

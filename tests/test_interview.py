@@ -1,16 +1,11 @@
 """Tests for the Interview Prep question bank and progress API."""
-from fastapi.testclient import TestClient
-
-from app.main import app
-
-client = TestClient(app)
 
 
-def _reset(question_id: str):
+def _reset(client, question_id: str):
     client.post(f"/api/interview/questions/{question_id}/reset")
 
 
-def test_interview_list_has_three_days_and_49_questions():
+def test_interview_list_has_three_days_and_49_questions(client):
     r = client.get("/api/interview")
     assert r.status_code == 200
     data = r.json()
@@ -33,8 +28,8 @@ def test_interview_every_question_has_analogy_and_two_hints():
         assert q["speak"].strip(), q["id"]
 
 
-def test_interview_question_detail_never_leaks_mcq_key_before_answer():
-    _reset("core-06-static-autowired")
+def test_interview_question_detail_never_leaks_mcq_key_before_answer(client):
+    _reset(client, "core-06-static-autowired")
     r = client.get("/api/interview/questions/core-06-static-autowired")
     assert r.status_code == 200
     q = r.json()
@@ -45,9 +40,9 @@ def test_interview_question_detail_never_leaks_mcq_key_before_answer():
     assert "answer" in q and "hints" in q and len(q["hints"]) == 2
 
 
-def test_interview_mcq_answer_wrong_then_correct_and_reset():
+def test_interview_mcq_answer_wrong_then_correct_and_reset(client):
     qid = "core-06-static-autowired"
-    _reset(qid)
+    _reset(client, qid)
 
     r = client.post(f"/api/interview/questions/{qid}/answer", json={"choice": "b"})
     assert r.status_code == 200
@@ -65,27 +60,27 @@ def test_interview_mcq_answer_wrong_then_correct_and_reset():
     assert r.json()["correct"] is True
     assert r.json()["status"] == "correct"
 
-    _reset(qid)
+    _reset(client, qid)
     assert client.get(f"/api/interview/questions/{qid}").json()["status"] == "unseen"
 
 
-def test_interview_mcq_rejects_invalid_choice():
-    _reset("core-06-static-autowired")
+def test_interview_mcq_rejects_invalid_choice(client):
+    _reset(client, "core-06-static-autowired")
     r = client.post("/api/interview/questions/core-06-static-autowired/answer", json={"choice": "z"})
     assert r.status_code == 400
 
 
-def test_interview_mcq_status_cannot_bypass_answer_validation():
+def test_interview_mcq_status_cannot_bypass_answer_validation(client):
     qid = "core-06-static-autowired"
-    _reset(qid)
+    _reset(client, qid)
     r = client.post(f"/api/interview/questions/{qid}/status", json={"status": "correct"})
     assert r.status_code == 400
     assert client.get(f"/api/interview/questions/{qid}").json()["status"] == "unseen"
 
 
-def test_interview_open_question_self_assessment():
+def test_interview_open_question_self_assessment(client):
     qid = "core-01-unknown-sequence"
-    _reset(qid)
+    _reset(client, qid)
     r = client.post(f"/api/interview/questions/{qid}/status", json={"status": "correct"})
     assert r.status_code == 200
     assert r.json()["status"] == "correct"
@@ -95,33 +90,33 @@ def test_interview_open_question_self_assessment():
     assert r.status_code == 200
     assert client.get(f"/api/interview/questions/{qid}").json()["status"] == "wrong"
 
-    _reset(qid)
+    _reset(client, qid)
     assert client.get(f"/api/interview/questions/{qid}").json()["status"] == "unseen"
 
 
-def test_interview_open_question_rejects_mcq_answer_endpoint():
-    _reset("core-01-unknown-sequence")
+def test_interview_open_question_rejects_mcq_answer_endpoint(client):
+    _reset(client, "core-01-unknown-sequence")
     r = client.post("/api/interview/questions/core-01-unknown-sequence/answer", json={"choice": "a"})
     assert r.status_code == 400
 
 
-def test_interview_unknown_question_returns_404():
+def test_interview_unknown_question_returns_404(client):
     assert client.get("/api/interview/questions/tidak-ada").status_code == 404
     assert client.post("/api/interview/questions/tidak-ada/reset").status_code == 404
 
 
-def test_interview_summary_reflects_status():
+def test_interview_summary_reflects_status(client):
     qid = "core-06-static-autowired"
-    _reset(qid)
+    _reset(client, qid)
     before = client.get("/api/interview/summary").json()["overall"]
     client.post(f"/api/interview/questions/{qid}/answer", json={"choice": "a"})
     after = client.get("/api/interview/summary").json()["overall"]
     assert after["correct"] == before["correct"] + 1
     assert after["total"] == 49
-    _reset(qid)
+    _reset(client, qid)
 
 
-def test_interview_lessons_and_roadmap_are_registered():
+def test_interview_lessons_and_roadmap_are_registered(client):
     for slug in ("interview-day1", "interview-day2", "interview-day3"):
         r = client.get(f"/api/lessons/{slug}")
         assert r.status_code == 200

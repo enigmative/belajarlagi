@@ -1,7 +1,8 @@
 from datetime import date, timedelta
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from app.api.deps import current_user
 from app.services import db
 from app.services import content
 
@@ -33,14 +34,14 @@ def _streak(dates: set) -> int:
 
 
 @router.get("/api/dashboard")
-def dashboard():
+def dashboard(user: dict = Depends(current_user)):
     lessons = db.get_lessons()
     total = len(lessons) or 1
-    completed = db.completed_lessons()
+    completed = db.completed_lessons(user["id"])
 
     # current lesson = first not-completed in order
     current = None
-    done_ids = db.completed_lesson_ids()
+    done_ids = db.completed_lesson_ids(user["id"])
     for l in lessons:
         if l["id"] not in done_ids:
             current = l
@@ -48,12 +49,12 @@ def dashboard():
     if current is None and lessons:
         current = lessons[-1]
 
-    minutes = db.learning_minutes()
-    dates = db.distinct_dates()
+    minutes = db.learning_minutes(user["id"])
+    dates = db.distinct_dates(user["id"])
 
     challenges = db.all_challenges()
-    ch_attempts = sum(db.challenge_stats(c["id"])["attempts"] or 0 for c in challenges)
-    ch_passed = db.passed_challenges_count()
+    ch_attempts = sum(db.challenge_stats(user["id"], c["id"])["attempts"] or 0 for c in challenges)
+    ch_passed = db.passed_challenges_count(user["id"])
     current_course = db.course_for_lesson(current["id"]) if current else None
 
     return {
@@ -86,3 +87,4 @@ def dashboard():
 def _fmt_time(minutes: int) -> str:
     h, m = divmod(minutes, 60)
     return f"{h}h {m}m"
+

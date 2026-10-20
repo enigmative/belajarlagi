@@ -1,11 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import os
 
 from app.api.routes import (
-    dashboard, lessons, progress, playground, challenges, notes, search, projects, interview,
-    courses,
+    auth, dashboard, lessons, progress, playground, challenges, notes, search, projects,
+    interview, courses,
 )
 from database.database import init_db
 
@@ -16,6 +16,7 @@ app = FastAPI(title="Belajar Lagi")
 
 init_db()
 
+app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(lessons.router)
 app.include_router(progress.router)
@@ -39,7 +40,14 @@ def index():
 @app.get("/{path:path}")
 def spa(path: str):
     # ponytail: any unknown path serves index.html; SPA routes client-side
-    candidate = os.path.join(FRONTEND, path)
-    if os.path.exists(candidate) and not os.path.isdir(candidate):
+    if path == "api" or path.startswith("api/"):
+        raise HTTPException(status_code=404)
+    root = os.path.realpath(FRONTEND)
+    candidate = os.path.realpath(os.path.join(root, path))
+    try:
+        inside = os.path.commonpath([root, candidate]) == root
+    except ValueError:
+        inside = False
+    if inside and os.path.isfile(candidate):
         return FileResponse(candidate)
-    return FileResponse(os.path.join(FRONTEND, "index.html"))
+    return FileResponse(os.path.join(root, "index.html"))

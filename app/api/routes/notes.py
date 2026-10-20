@@ -1,6 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from app.api.deps import current_user
 from app.services import db
 
 router = APIRouter()
@@ -13,18 +14,18 @@ class Note(BaseModel):
 
 
 @router.get("/api/notes")
-def list_notes():
-    return db.list_notes()
+def list_notes(user: dict = Depends(current_user)):
+    return db.list_notes(user["id"])
 
 
 @router.post("/api/notes")
-def create_note(n: Note):
-    return {"id": db.add_note(n.title, n.body, n.kind)}
+def create_note(n: Note, user: dict = Depends(current_user)):
+    return {"id": db.add_note(user["id"], n.title, n.body, n.kind)}
 
 
 @router.delete("/api/notes/{note_id}")
-def delete_note(note_id: int):
-    db.del_note(note_id)
+def delete_note(note_id: int, user: dict = Depends(current_user)):
+    db.del_note(user["id"], note_id)
     return {"ok": True}
 
 
@@ -36,16 +37,16 @@ class Mistake(BaseModel):
 
 
 @router.get("/api/mistakes")
-def list_mistakes():
-    return db.list_mistakes()
+def list_mistakes(user: dict = Depends(current_user)):
+    return db.list_mistakes(user["id"])
 
 
 @router.post("/api/mistakes")
-def create_mistake(m: Mistake):
-    return {"id": db.add_mistake(m.problem, m.cause, m.lesson, m.prevention)}
+def create_mistake(m: Mistake, user: dict = Depends(current_user)):
+    return {"id": db.add_mistake(user["id"], m.problem, m.cause, m.lesson, m.prevention)}
 
 
 @router.delete("/api/mistakes/{mistake_id}")
-def delete_mistake(mistake_id: int):
-    db.del_mistake(mistake_id)
+def delete_mistake(mistake_id: int, user: dict = Depends(current_user)):
+    db.del_mistake(user["id"], mistake_id)
     return {"ok": True}

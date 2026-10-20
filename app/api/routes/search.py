@@ -1,13 +1,13 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends
 
-from app.services import content, db
+from app.api.deps import current_user
+from app.services import content
 
 router = APIRouter()
 
 
 @router.get("/api/search")
-def search(q: str = ""):
+def search(q: str = "", user: dict = Depends(current_user)):
     q = q.lower()
     items = content.search_index()
     if not q:

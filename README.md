@@ -1,10 +1,10 @@
 # Belajar Lagi
 
-Personal programming academy — local learning platform untuk membangun kembali kemampuan programming manual.
+Local-first programming academy — platform belajar multi-user untuk membangun kembali kemampuan programming manual.
 
 ## What is Belajar Lagi?
 
-Platform belajar programming pribadi yang berjalan lokal di komputer kamu. Tujuannya bukan sekadar menampilkan materi, tapi membangun sistem latihan yang mendorong `pahami → pikirkan → tulis sendiri → uji → debug → ulangi`, mengurangi ketergantungan terhadap AI.
+Platform belajar programming yang bisa berjalan lokal atau di server. Katalog kelas dapat dilihat publik, tetapi lesson, progres, catatan, dan latihan terikat ke akun masing-masing. Tujuannya bukan sekadar menampilkan materi, tapi membangun sistem latihan yang mendorong `pahami → pikirkan → tulis sendiri → uji → debug → ulangi`, mengurangi ketergantungan terhadap AI.
 
 ## Why it exists
 
@@ -28,7 +28,7 @@ Di Windows, cukup jalankan:
 run.bat
 ```
 
-Script akan otomatis: membuat venv → install dependencies → seed database → membuka browser → menjalankan server di `http://127.0.0.1:8000`.
+Script akan otomatis: membuat venv → install dependencies → seed database → memastikan akun admin → membuka browser → menjalankan server di `http://127.0.0.1:8000`.
 
 Secara manual:
 
@@ -37,8 +37,40 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
 python scripts\seed.py
+python scripts\manage_users.py setup-admin --email admin@example.com --name Admin
 uvicorn app.main:app --reload
 ```
+
+> **Database lama:** `seed.py`/`init_db()` otomatis memigrasikan skema single-user ke multi-user. Data lama (lesson, progres, challenge, sesi belajar, dan checklist project) dipindahkan ke akun terkunci `owner@local`. Jalankan `python scripts/manage_users.py setup-admin --email ... --name ...` untuk mengklaim akun itu sebagai admin. Backup `learning.db` sebelum migrasi pertama.
+
+## Akun & akses
+
+- **Tidak ada registrasi publik.** Admin membuat akun lewat CLI.
+- Katalog `/api/courses` dan detail kelas bisa diakses tanpa login.
+- Lesson, dashboard, progres, notes, challenges, interview, projects, search, dan playground membutuhkan login.
+- Setiap user punya progres, catatan, attempt challenge, interview progress, sesi belajar, dan checklist project sendiri.
+
+Perintah admin:
+
+```bash
+# Buat admin pertama (atau klaim owner@local hasil migrasi)
+python scripts/manage_users.py setup-admin --email admin@example.com --name "Admin"
+
+# Buat akun siswa
+python scripts/manage_users.py create --email siswa@example.com --name "Siswa"
+
+# Reset password (semua sesi user tersebut langsung logout)
+python scripts/manage_users.py reset-password --email siswa@example.com
+
+# Aktifkan / nonaktifkan akun
+python scripts/manage_users.py activate --email siswa@example.com
+python scripts/manage_users.py deactivate --email siswa@example.com
+
+# Lihat semua akun
+python scripts/manage_users.py list
+```
+
+Password menggunakan `hashlib.scrypt`. Login membuat cookie `bl_session` (HttpOnly, SameSite=Lax, berlaku 30 hari). Di belakang HTTPS, set `BELAJAR_LAGI_HTTPS=1` agar cookie diberi flag `Secure`. Logout dan reset password menghapus sesi di server.
 
 ## Run tests
 
@@ -52,22 +84,71 @@ Test memakai database sementara lewat environment variable `BELAJAR_LAGI_DB`, ja
 $env:BELAJAR_LAGI_DB = "C:\path\ke\database.db"
 ```
 
+## Deployment (server)
+
+SQLite hanya cocok untuk **satu worker**. Jangan jalankan beberapa proses uvicorn yang menulis database yang sama.
+
+1. Siapkan database dan admin pertama:
+
+```bash
+export BELAJAR_LAGI_DB=/srv/belajar-lagi/learning.db
+python scripts/seed.py
+python scripts/manage_users.py setup-admin --email admin@example.com --name Admin
+```
+
+2. Jalankan di belakang reverse proxy HTTPS, bukan langsung terekspos:
+
+```bash
+export BELAJAR_LAGI_HTTPS=1
+# opsional: matikan eksekusi kode sebelum runner benar-benar disandbox
+# export BELAJAR_LAGI_RUNNER=0
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+```
+
+Contoh systemd (ringkas):
+
+```ini
+[Service]
+WorkingDirectory=/srv/belajar-lagi
+Environment=BELAJAR_LAGI_DB=/srv/belajar-lagi/learning.db
+Environment=BELAJAR_LAGI_HTTPS=1
+ExecStart=/srv/belajar-lagi/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=on-failure
+```
+
+3. Backup konsisten (aman meskipun server berjalan, memakai SQLite backup API):
+
+```bash
+python scripts/backup_db.py
+python scripts/backup_db.py --output /srv/backups/belajar-lagi-$(date +%F).db
+```
+
+Folder `backups/` dan `learning.db` sudah di-ignore Git. Jangan commit database atau backup.
+
+4. Sebelum membuka akses publik, baca peringatan **Security (code runner)** di bawah. Endpoint runner menjalankan Python dan belum memakai sandbox container.
+
 ## Project structure
 
 ```text
 BelajarLagi/
-├── belajar.txt            # kurikulum utama (WAJIB dibaca, jangan dihapus)
 ├── roadmap.md, progress.md
 ├── app/
 │   ├── main.py            # FastAPI entry
-│   ├── api/routes/        # endpoint API (termasuk courses.py)
-│   ├── services/          # db, content, runner, challenges
+│   ├── api/deps.py        # current_user / optional_user
+│   ├── api/routes/        # endpoint API (termasuk auth.py dan courses.py)
+│   ├── services/          # db, auth, content, runner, challenges
 │   ├── data/              # definisi challenge & katalog kursus (courses_def.py)
-├── database/schema.sql    # skema SQLite
+├── database/
+│   ├── schema.sql         # skema SQLite multi-user
+│   ├── migrations.py      # migrasi otomatis dari skema single-user
+│   └── database.py        # koneksi + init_db
 ├── content/               # materi markdown
 ├── frontend/              # SPA (index.html, css, js)
 │   └── js/vendor/         # Feather icons (lokal)
-├── scripts/seed.py        # inisialisasi database + mapping course/module/lesson
+├── scripts/
+│   ├── seed.py            # inisialisasi database + mapping course/module/lesson
+│   ├── manage_users.py    # buat admin, akun, reset password, aktivasi
+│   └── backup_db.py       # backup SQLite yang konsisten
 ├── tests/                 # pytest (memakai database sementara)
 └── run.bat
 ```
@@ -106,14 +187,16 @@ Halaman **Kelas** menampilkan katalog dan filter kategori. Halaman detail kelas 
 ## How progress works
 
 Progress tersimpan di SQLite (tidak hanya checkbox frontend). Database mencatat:
+- `users` + `auth_sessions` (akun dan sesi login)
 - `courses` → `course_modules` → `course_lessons` (katalog dan urutan materi)
-- `course_enrollments` (kelas yang diikuti/dimulai)
-- `lessons` + `lesson_progress` (status + `completed_at`)
-- `challenges` + `challenge_attempts` (result, time, hints, attempt number)
-- `learning_sessions` (untuk streak & total waktu belajar)
-- `notes`, `mistakes`, `projects`, `project_tasks`
+- `course_enrollments` (kelas yang diikuti/dimulai, per user)
+- `lessons` + `lesson_progress` (status + `completed_at`, per user)
+- `challenges` + `challenge_attempts` (result, time, hints, attempt number, per user)
+- `learning_sessions` (untuk streak & total waktu belajar, per user)
+- `interview_progress` (status per user per pertanyaan)
+- `notes`, `mistakes`, `project_task_progress`
 
-Semua statistik di dashboard/progress **berasal dari data nyata** — mulai dari 0%, bukan data palsu.
+Semua statistik di dashboard/progress **berasal dari data nyata** dan dihitung terpisah untuk setiap akun — mulai dari 0%, bukan data palsu.
 
 ## Security (code runner)
 
@@ -121,13 +204,24 @@ Semua statistik di dashboard/progress **berasal dari data nyata** — mulai dari
 - Timeout 5 detik, limit output, tanpa `shell=True`, tanpa arbitrary shell command.
 - Challenge solution & hidden tests disimpan di backend, bukan frontend.
 - `eval()` tidak digunakan untuk menjalankan kode user.
-- Untuk sandbox penuh (Docker) akan menyusul di tahap lanjut.
+- **Ini bukan sandbox sebenarnya.** `-I` tidak membatasi akses filesystem, network, memori, atau CPU. User yang sudah login masih bisa menjalankan kode Python berbahaya di mesin server.
+- Untuk sekarang akun hanya dibuat admin, jadi runner cocok untuk lingkaran terpercaya. **Jangan membuka pendaftaran publik atau server ke internet luas sebelum runner diganti dengan container/worker terisolasi** (Docker, gVisor, atau layanan eksekusi terpisah).
+- Kill switch: set `BELAJAR_LAGI_RUNNER=0` untuk mematikan eksekusi kode di seluruh server. Playground dan submit challenge akan mengembalikan error tanpa menjalankan kode.
+- Sampai runner aman, opsi paling aman adalah menonaktifkan endpoint `/api/playground/run` dan submit challenge di reverse proxy untuk user publik, atau membatasi akses server.
+
+## Login & cookie
+
+- Password di-hash dengan `hashlib.scrypt` (salt acak per password).
+- Sesi memakai token acak opaque; yang disimpan di database hanya hash SHA-256 token.
+- Cookie `bl_session`: HttpOnly, SameSite=Lax, umur 30 hari, `Secure` jika `BELAJAR_LAGI_HTTPS=1` atau request HTTPS.
+- Logout, reset password, dan deaktivasi akun menghapus sesi terkait.
+- Akun nonaktif tidak bisa login dan sesi lamanya tidak berlaku.
 
 ## Fitur
 
-Dashboard, **Kelas** (katalog + detail + modul), **Kelas Saya**, lesson dengan outline kelas, Roadmap, Challenges, Python Playground, Projects, Notes, Mistake Journal, Progress per kelas, Weekly Review, Search (Ctrl+K), Dark Mode.
+Login multi-user, dashboard, **Kelas** (katalog publik + detail + modul), **Kelas Saya**, lesson dengan outline kelas, Roadmap, Challenges, Python Playground, Projects, Notes, Mistake Journal, Progress per kelas, Weekly Review, Search (Ctrl+K), Dark Mode. Admin mengelola akun lewat CLI; registrasi publik belum tersedia.
 
-Shorcut: `Ctrl+K` = search, `Ctrl+Enter` = run code.
+Shortcut: `Ctrl+K` = search, `Ctrl+Enter` = run code.
 
 ## AI Usage Policy
 

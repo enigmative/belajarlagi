@@ -3,8 +3,12 @@ __pycache__/
 *.pyc
 .pytest_cache/
 learning.db
+learning.db-*
 backups/
 coverage/
 .infracost/
 .idea/
 .vscode/
+frontend-backup/
+frontend-backup-v2/
+frontend/css/ref/

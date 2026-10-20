@@ -1,9 +1,10 @@
 from datetime import date
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.api.deps import current_user
 from app.data import interview_def as idef
 from app.services import db
 
@@ -12,8 +13,8 @@ router = APIRouter()
 VALID_STATUS = {"unseen", "wrong", "correct"}
 
 
-def _progress_map() -> dict:
-    return db.interview_progress_all()
+def _progress_map(user_id: int) -> dict:
+    return db.interview_progress_all(user_id)
 
 
 def _day_summary(day: dict, questions: list[dict], progress: dict) -> dict:
@@ -56,9 +57,9 @@ def _day_summary(day: dict, questions: list[dict], progress: dict) -> dict:
     }
 
 
-def _summary(progress: dict | None = None) -> dict:
+def _summary(user_id: int, progress: dict | None = None) -> dict:
     if progress is None:
-        progress = _progress_map()
+        progress = _progress_map(user_id)
     questions_by_day = {d["day"]: [] for d in idef.INTERVIEW_DAYS}
     for q in idef.INTERVIEW_QUESTIONS:
         questions_by_day.setdefault(q["day"], []).append(q)
@@ -83,32 +84,32 @@ def _summary(progress: dict | None = None) -> dict:
     }
 
 
-def _touch_session_once_today():
+def _touch_session_once_today(user_id: int):
     today = date.today().isoformat()
-    if today not in db.distinct_dates():
-        db.touch_session(today)
+    if today not in db.distinct_dates(user_id):
+        db.touch_session(user_id, today)
 
 
 @router.get("/api/interview")
-def list_interview():
-    progress = _progress_map()
-    data = _summary(progress)
+def list_interview(user: dict = Depends(current_user)):
+    progress = _progress_map(user["id"])
+    data = _summary(user["id"], progress)
     data["questions"] = [idef.public_question(q, progress.get(q["id"])) for q in idef.INTERVIEW_QUESTIONS]
     return data
 
 
 @router.get("/api/interview/summary")
-def interview_summary():
-    return _summary()
+def interview_summary(user: dict = Depends(current_user)):
+    return _summary(user["id"])
 
 
 @router.get("/api/interview/questions/{question_id}")
-def get_interview_question(question_id: str):
+def get_interview_question(question_id: str, user: dict = Depends(current_user)):
     question = idef.get_question(question_id)
     if not question:
         raise HTTPException(404, "question not found")
 
-    progress = db.interview_progress(question_id) or {}
+    progress = db.interview_progress(user["id"], question_id) or {}
     out = {k: v for k, v in question.items() if k != "correct"}
     out = dict(out)
     out["status"] = progress.get("status", "unseen")
@@ -129,7 +130,7 @@ class StatusBody(BaseModel):
 
 
 @router.post("/api/interview/questions/{question_id}/answer")
-def answer_interview_question(question_id: str, body: AnswerBody):
+def answer_interview_question(question_id: str, body: AnswerBody, user: dict = Depends(current_user)):
     question = idef.get_question(question_id)
     if not question:
         raise HTTPException(404, "question not found")
@@ -142,8 +143,8 @@ def answer_interview_question(question_id: str, body: AnswerBody):
 
     correct = body.choice == question["correct"]
     status = "correct" if correct else "wrong"
-    db.set_interview_status(question_id, status, body.choice)
-    _touch_session_once_today()
+    db.set_interview_status(user["id"], question_id, status, body.choice)
+    _touch_session_once_today(user["id"])
 
     return {
         "correct": correct,
@@ -153,7 +154,7 @@ def answer_interview_question(question_id: str, body: AnswerBody):
 
 
 @router.post("/api/interview/questions/{question_id}/status")
-def set_interview_question_status(question_id: str, body: StatusBody):
+def set_interview_question_status(question_id: str, body: StatusBody, user: dict = Depends(current_user)):
     question = idef.get_question(question_id)
     if not question:
         raise HTTPException(404, "question not found")
@@ -161,18 +162,18 @@ def set_interview_question_status(question_id: str, body: StatusBody):
         raise HTTPException(400, "MCQ status is set through the answer endpoint")
 
     if body.status == "unseen":
-        db.reset_interview_status(question_id)
+        db.reset_interview_status(user["id"], question_id)
     else:
-        db.set_interview_status(question_id, body.status)
-        _touch_session_once_today()
+        db.set_interview_status(user["id"], question_id, body.status)
+        _touch_session_once_today(user["id"])
 
     return {"question_id": question_id, "status": body.status}
 
 
 @router.post("/api/interview/questions/{question_id}/reset")
-def reset_interview_question(question_id: str):
+def reset_interview_question(question_id: str, user: dict = Depends(current_user)):
     question = idef.get_question(question_id)
     if not question:
         raise HTTPException(404, "question not found")
-    db.reset_interview_status(question_id)
+    db.reset_interview_status(user["id"], question_id)
     return {"question_id": question_id, "status": "unseen"}

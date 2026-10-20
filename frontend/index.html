@@ -11,7 +11,7 @@
 <!-- Design system (local, adapted from dimasaulia.my.id) -->
 <link rel="stylesheet" href="/static/design.css?v=8">
 <!-- Bespoke layer: markdown, code output, app components -->
-<link rel="stylesheet" href="/static/style.css?v=10">
+<link rel="stylesheet" href="/static/style.css?v=12">
 </head>
 
 <body class="dashboard">
@@ -41,6 +41,7 @@
     <a href="#/settings" data-nav>Settings</a>
   </nav>
   <div class="sidebar-foot">
+    <div class="user-box" id="user-box"></div>
     <button class="ghost small" onclick="toggleTheme()" id="theme-toggle">Theme</button>
   </div>
 </aside>
@@ -69,6 +70,7 @@
   <a href="#/progress" data-nav onclick="closeMobile()">Progress</a>
   <a href="#/weekly" data-nav onclick="closeMobile()">Weekly</a>
   <a href="#/settings" data-nav onclick="closeMobile()">Settings</a>
+  <div class="user-box drawer-user" id="user-box-mobile"></div>
 </div>
 
 <!-- BEGIN: Content -->
@@ -107,6 +109,6 @@
 </div>
 
 <script src="/js/vendor/feather.min.js?v=4.29.0"></script>
-<script src="/js/app.js?v=13"></script>
+<script src="/js/app.js?v=16"></script>
 </body>
 </html>
