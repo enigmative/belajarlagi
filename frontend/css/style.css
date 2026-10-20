@@ -240,9 +240,11 @@ html.dark .sidebar { background: var(--white); }
 #search-results li a:hover { background: rgba(var(--black-rgb), .06); }
 
 /* ---------- Stat card ---------- */
-.stat-card { border: 1px solid rgba(var(--black-rgb), .15); border-radius: var(--border-radius); padding: var(--line) var(--char); background: var(--white); }
-.stat-card .stat-label { font-family: abcplus, helvetica, sans-serif; font-size: calc(var(--font-size) * .8); text-transform: uppercase; letter-spacing: var(--letter-spacing); opacity: .6; margin-bottom: .25rem; }
+.stat-card { position: relative; border: 1px solid rgba(var(--black-rgb), .15); border-radius: var(--border-radius); padding: var(--line) var(--char); background: var(--white); }
+.stat-card .stat-label { font-family: abcplus, helvetica, sans-serif; font-size: calc(var(--font-size) * .8); text-transform: uppercase; letter-spacing: var(--letter-spacing); opacity: .6; margin-bottom: .25rem; padding-right: 1.75rem; }
 .stat-card .stat-value { font-size: calc(var(--font-size) * 1.6); font-weight: 700; line-height: 1.2; }
+.stat-card .stat-icon { position: absolute; top: .55rem; right: .6rem; width: 16px; height: 16px; opacity: .35; pointer-events: none; }
+.stat-card .stat-icon svg { width: 16px; height: 16px; display: block; stroke-width: 1.75; }
 .stat-grid { display: flex; flex-wrap: wrap; gap: var(--char2); }
 .stat-grid > * { flex: 1 1 140px; }
 

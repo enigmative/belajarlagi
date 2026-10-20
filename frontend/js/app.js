@@ -90,12 +90,12 @@ function barHtml(pct, ok, showLabel = true) {
 }
 
 function statCard(icon, label, value) {
-  return `<div class="stat-card" style="display:flex;align-items:center;justify-content:space-between">
-    <div>
+  return `<div class="stat-card">
+    <div class="stat-content">
       <div class="stat-label">${label}</div>
       <div class="stat-value">${value}</div>
     </div>
-    <div style="opacity:.35"><i data-feather="${icon}" style="width:24px;height:24px"></i></div>
+    <span class="stat-icon" aria-hidden="true"><i data-feather="${icon}"></i></span>
   </div>`;
 }
 
