@@ -1068,7 +1068,7 @@ async function route() {
 function applyTheme() {
   const t = localStorage.getItem('bl-theme') || 'light';
   document.documentElement.classList.toggle('dark', t === 'dark');
-  ['theme-toggle', 'theme-toggle-m'].forEach(id => {
+  ['theme-toggle-m'].forEach(id => {
     const btn = document.getElementById(id);
     if (btn) btn.textContent = t === 'dark' ? 'Light' : 'Dark';
   });
@@ -1121,8 +1121,6 @@ function closeMobile() {
 /* ================= Bootstrap ================= */
 window.addEventListener('hashchange', route);
 document.addEventListener('DOMContentLoaded', () => {
-  const tt = document.getElementById('theme-toggle');
-  if (tt) tt.addEventListener('click', toggleTheme);
   const sb = document.getElementById('search-btn');
   // search button not present in new nav; bind Ctrl+K only
   const si = document.getElementById('search-input');
