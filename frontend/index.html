@@ -11,7 +11,7 @@
 <!-- Design system (local, adapted from dimasaulia.my.id) -->
 <link rel="stylesheet" href="/static/design.css?v=8">
 <!-- Bespoke layer: markdown, code output, app components -->
-<link rel="stylesheet" href="/static/style.css?v=14">
+<link rel="stylesheet" href="/static/style.css?v=15">
 </head>
 
 <body class="dashboard">
@@ -55,6 +55,7 @@
 <!-- Mobile menu overlay -->
 <div class="mobile-overlay" id="mobile-menu" style="display:none" onclick="closeMobile()"></div>
 <div class="mobile-drawer" id="mobile-drawer" style="display:none">
+  <span class="nav-group">Belajar</span>
   <a href="#/dashboard" data-nav onclick="closeMobile()">Dashboard</a>
   <a href="#/courses" data-nav onclick="closeMobile()">Kelas</a>
   <a href="#/my-learning" data-nav onclick="closeMobile()">Kelas Saya</a>
@@ -63,11 +64,13 @@
   <a href="#/challenges" data-nav onclick="closeMobile()">Challenges</a>
   <a href="#/interview" data-nav onclick="closeMobile()">Interview</a>
   <a href="#/playground" data-nav onclick="closeMobile()">Playground</a>
+  <span class="nav-group">Berkarya</span>
   <a href="#/projects" data-nav onclick="closeMobile()">Projects</a>
   <a href="#/notes" data-nav onclick="closeMobile()">Notes</a>
   <a href="#/mistakes" data-nav onclick="closeMobile()">Mistakes</a>
   <a href="#/progress" data-nav onclick="closeMobile()">Progress</a>
   <a href="#/weekly" data-nav onclick="closeMobile()">Weekly</a>
+  <span class="nav-group">Sistem</span>
   <a href="#/settings" data-nav onclick="closeMobile()">Settings</a>
   <div class="user-box drawer-user" id="user-box-mobile"></div>
 </div>

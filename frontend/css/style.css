@@ -196,9 +196,15 @@ html.dark .sidebar { background: var(--white); }
   font-family: abcplus, helvetica, sans-serif; text-transform: uppercase; letter-spacing: var(--letter-spacing);
   border-right: 1px solid rgba(var(--black-rgb), .1); overflow-y: auto;
 }
-.mobile-drawer a { padding: 8px; border-bottom: 1px solid rgba(var(--black-rgb), .08); color: var(--black); text-decoration: none; }
-.mobile-drawer a.active { font-weight: 700; background: rgba(var(--black-rgb), .1); }
+.mobile-drawer a { padding: 8px; border-radius: var(--border-radius); color: var(--black); text-decoration: none; transition: background .15s; }
+.mobile-drawer a.active { font-weight: 700; background: rgba(var(--black-rgb), .12); }
 .mobile-drawer a:hover { background: var(--black); color: var(--white); }
+.mobile-drawer .nav-group {
+  margin-top: var(--line); margin-bottom: 4px; padding-top: var(--line);
+  border-top: 1px solid rgba(var(--black-rgb), .1);
+  opacity: .4; font-size: calc(var(--font-size) * .8);
+}
+.mobile-drawer .nav-group:first-of-type { margin-top: 0; padding-top: 0; border-top: 0; }
 
 /* ---------- Responsive: collapse sidebar ---------- */
 @media (max-width: 800px) {
