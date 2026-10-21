@@ -220,6 +220,10 @@ html.dark .sidebar { background: var(--white); }
 .mt-1 { margin-top: var(--line); }
 .mt-2 { margin-top: calc(var(--line) * 2); }
 .text-muted { opacity: .6; }
+.desktop-only { display: inline-flex !important; }
+@media (max-width: 768px) { .desktop-only { display: none !important; } }
+.mobile-only { display: none !important; }
+@media (max-width: 768px) { .mobile-only { display: inline-flex !important; } }
 .text-primary { color: var(--black); font-weight: 700; }
 .text-success { color: #28c76f; }
 .text-danger { color: #ea5455; }

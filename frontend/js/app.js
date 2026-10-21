@@ -122,7 +122,7 @@ function renderUserBox() {
   const html = currentUser
     ? `<div class="user-meta"><strong>${esc(currentUser.name)}</strong><span>${esc(currentUser.email)}</span></div>
        <button class="button" onclick="actLogout()">Logout</button>`
-    : `<a class="button small" href="#/login">Masuk</a>`;
+    : `<a class="button" href="#/login">Masuk</a>`;
   ['user-box', 'user-box-mobile'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = html;
@@ -151,13 +151,15 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 function pageLogin() {
-  return `<div class="auth-page"><div class="auth-shell">
+  return `<div class="auth-page">
+    <button class="button mobile-only" type="button" id="theme-toggle-login-mobile" onclick="toggleTheme()" aria-label="Ubah tema" style="position:fixed;top:var(--line);right:var(--char2);z-index:60;">Dark</button>
+    <div class="auth-shell">
     <section class="auth-intro">
       <a href="#/courses" class="brand auth-logo">belajar.lagi<sup>®</sup></a>
       <div class="auth-intro-main">
         <p class="auth-kicker">Platform belajar</p>
         <h1 class="mega auth-title">Masuk.<br>Lanjutkan belajar.</h1>
-        <p class="page-lead">Katalog kelas bisa dilihat tanpa akun. Lesson, progres, dan catatan membutuhkan login.</p>
+
       </div>
       <p class="auth-note small text-muted">Try first. Think before asking AI.</p>
     </section>
@@ -297,10 +299,7 @@ async function pageDashboard() {
       </div>`).join('')}
     </div>`) : '';
   return `
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--char2);margin-bottom:var(--line)">
-      <h1 class="mega" style="margin:0">Dashboard</h1>
-      <button class="button" type="button" id="theme-toggle-dashboard" onclick="toggleTheme()" aria-label="Ubah tema">Dark</button>
-    </div>
+    ${pageHeading('Dashboard')}
     <p class="text-muted" style="margin-bottom:var(--line);text-transform:none;letter-spacing:0">Ringkasan progres belajarmu.</p>
     <div class="card" style="margin-bottom:var(--line)">
       <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -1095,7 +1094,7 @@ async function route() {
 function applyTheme() {
   const t = localStorage.getItem('bl-theme') || 'light';
   document.documentElement.classList.toggle('dark', t === 'dark');
-  ['theme-toggle-m', 'theme-toggle-dashboard'].forEach(id => {
+  ['theme-toggle-m', 'theme-toggle-global', 'theme-toggle-login-mobile'].forEach(id => {
     const btn = document.getElementById(id);
     if (btn) btn.textContent = t === 'dark' ? 'Light' : 'Dark';
   });

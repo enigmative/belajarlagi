@@ -11,7 +11,7 @@
 <!-- Design system (local, adapted from dimasaulia.my.id) -->
 <link rel="stylesheet" href="/static/design.css?v=8">
 <!-- Bespoke layer: markdown, code output, app components -->
-<link rel="stylesheet" href="/static/style.css?v=21">
+<link rel="stylesheet" href="/static/style.css?v=24">
 <link rel="stylesheet" href="/static/games.css?v=8">
 </head>
 
@@ -55,6 +55,8 @@
   <a href="#/dashboard" class="brand" style="font-family:abcplus,helvetica,sans-serif !important;font-variation-settings:'MONO' 0, 'wght' 700">belajar.lagi<sup>®</sup></a>
   <button class="ghost" id="theme-toggle-m" onclick="toggleTheme()">Theme</button>
 </div>
+
+<button class="button desktop-only" id="theme-toggle-global" onclick="toggleTheme()" aria-label="Ubah tema" style="position:fixed;top:var(--line);right:var(--char2);z-index:60;">Dark</button>
 
 <!-- Mobile menu overlay -->
 <div class="mobile-overlay" id="mobile-menu" style="display:none" onclick="closeMobile()"></div>
@@ -112,6 +114,6 @@
 
 <script src="/js/vendor/feather.min.js?v=4.29.0"></script>
 <script src="/js/games.js?v=8"></script>
-<script src="/js/app.js?v=23"></script>
+<script src="/js/app.js?v=27"></script>
 </body>
 </html>
