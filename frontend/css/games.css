@@ -8,6 +8,7 @@
    are hidden while a game route is active. The Main > Games item remains
    in the app navigation on every other route. */
 body.games-mode #content { padding: 0; }
+body.games-mode #footer { display: block !important; }
 
 /* ---------- Fixed top navigation ---------- */
 
