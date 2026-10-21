@@ -259,7 +259,7 @@ html.dark .sidebar { background: var(--white); }
 .scroll-top { position: fixed; bottom: var(--char2); right: var(--char2); }
 
 html.dark .text-primary { color: var(--white); }
-html.dark .output { background: rgba(var(--white-rgb), .06); border-color: rgba(var(--white-rgb), .15); color: var(--white); }
+html.dark .output { background: rgba(var(--black-rgb), .06); border-color: rgba(var(--black-rgb), .15); color: var(--black); }
 
 /* Button hover (reference style: inverted) */
 .button:hover, a.button:hover { background: var(--black); color: var(--white); }
@@ -344,14 +344,14 @@ html.dark .output { background: rgba(var(--white-rgb), .06); border-color: rgba(
   padding: .3rem .7rem;
   border: 1px solid rgba(var(--black-rgb), .2);
   border-radius: 2px;
-  background: transparent;
-  color: var(--black);
+  background: transparent !important;
+  color: var(--black) !important;
   cursor: pointer;
   transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 
-.filter-pill:hover { border-color: var(--black); }
-.filter-pill.active { background: var(--black); color: var(--white); border-color: var(--black); }
+.filter-pill:hover { border-color: var(--black) !important; background: transparent !important; color: var(--black) !important; }
+.filter-pill.active { background: var(--white) !important; color: var(--black) !important; border-color: var(--black) !important; }
 
 /* ---------- Course cards ---------- */
 .course-grid {

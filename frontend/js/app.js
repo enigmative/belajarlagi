@@ -121,7 +121,7 @@ async function loadCurrentUser() {
 function renderUserBox() {
   const html = currentUser
     ? `<div class="user-meta"><strong>${esc(currentUser.name)}</strong><span>${esc(currentUser.email)}</span></div>
-       <button class="ghost small" onclick="actLogout()">Logout</button>`
+       <button class="button" onclick="actLogout()">Logout</button>`
     : `<a class="button small" href="#/login">Masuk</a>`;
   ['user-box', 'user-box-mobile'].forEach(id => {
     const el = document.getElementById(id);
@@ -297,7 +297,10 @@ async function pageDashboard() {
       </div>`).join('')}
     </div>`) : '';
   return `
-    ${pageHeading('Dashboard')}
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:var(--char2);margin-bottom:var(--line)">
+      <h1 class="mega" style="margin:0">Dashboard</h1>
+      <button class="button" type="button" id="theme-toggle-dashboard" onclick="toggleTheme()" aria-label="Ubah tema">Dark</button>
+    </div>
     <p class="text-muted" style="margin-bottom:var(--line);text-transform:none;letter-spacing:0">Ringkasan progres belajarmu.</p>
     <div class="card" style="margin-bottom:var(--line)">
       <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -324,13 +327,7 @@ async function pageDashboard() {
         <div style="display:flex;gap:.5rem;flex-wrap:wrap">${btn}<a class="button outline" href="#/courses">Lihat Semua Kelas</a></div>
       </div>
     </div>
-    ${ivCard}
-    <div class="card" style="border-top:none;padding-top:0">
-      <div class="card-body" style="text-align:center">
-        <p class="text-muted mb-0" style="text-transform:none;letter-spacing:0">TRY FIRST · THINK BEFORE ASKING AI</p>
-        <p class="text-muted small mb-0" style="text-transform:none;letter-spacing:0">Gunakan AI untuk belajar, bukan untuk menghindar dari berpikir.</p>
-      </div>
-    </div>`;
+    ${ivCard}`;
 }
 
 /* ================= Courses ================= */
@@ -1098,7 +1095,7 @@ async function route() {
 function applyTheme() {
   const t = localStorage.getItem('bl-theme') || 'light';
   document.documentElement.classList.toggle('dark', t === 'dark');
-  ['theme-toggle-m'].forEach(id => {
+  ['theme-toggle-m', 'theme-toggle-dashboard'].forEach(id => {
     const btn = document.getElementById(id);
     if (btn) btn.textContent = t === 'dark' ? 'Light' : 'Dark';
   });
