@@ -255,8 +255,7 @@
             ${extraHtml || ''}
           </aside>
         </div>
-      </main>
-      ${playFooter()}`;
+      </main>`;
     return {
       stage: root.querySelector('#game-stage'),
       overlay: root.querySelector('#game-overlay'),
@@ -393,8 +392,7 @@
               : '<div class="play-hub-empty">Belum ada rekor</div>'}
           </div>
         </div>
-      </main>
-      ${playFooter()}`;
+      </main>`;
 
     const links = Array.from(root.querySelectorAll('.play-hub-game'));
     let selected = 0;

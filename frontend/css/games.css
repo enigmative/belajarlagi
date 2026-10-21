@@ -7,7 +7,6 @@
 /* The games area is intentionally immersive: the app sidebar and footer
    are hidden while a game route is active. The Main > Games item remains
    in the app navigation on every other route. */
-body.games-mode #footer { display: none !important; }
 body.games-mode #content { padding: 0; }
 
 /* ---------- Fixed top navigation ---------- */
