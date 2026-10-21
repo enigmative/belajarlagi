@@ -23,7 +23,7 @@ sudo systemctl restart belajar-lagi
 
 echo "[deploy] health check"
 for i in $(seq 1 30); do
-  code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api/courses)
+  code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api/courses || true)
   if [ "$code" = "200" ]; then
     echo "[deploy] healthy (200)"
     exit 0
