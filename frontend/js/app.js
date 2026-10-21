@@ -151,19 +151,33 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 function pageLogin() {
-  return `<div class="auth-page"><div class="card auth-card"><div class="card-body">
-    <div class="auth-brand">Belajar Lagi</div>
-    <h1 class="mega">Masuk</h1>
-    <p class="page-lead">Katalog kelas bisa dilihat tanpa akun. Lesson, progres, dan catatan membutuhkan login.</p>
-    <form class="auth-form" onsubmit="return actLogin(event)">
-      <label>Email<input id="login-email" type="email" autocomplete="username" required autofocus></label>
-      <label>Password<input id="login-password" type="password" autocomplete="current-password" required></label>
-      <div id="login-error" class="alert alert-danger" style="display:none"></div>
-      <button class="button" type="submit">Masuk →</button>
-    </form>
-    <p class="small text-muted" style="margin-top:var(--line)">Akun dibuat oleh admin. Belum punya akun? Hubungi admin.</p>
-    <p class="small"><a href="#/courses">Lihat katalog kelas tanpa masuk →</a></p>
-  </div></div></div>`;
+  return `<div class="auth-page"><div class="auth-shell">
+    <section class="auth-intro">
+      <a href="#/courses" class="brand auth-logo">belajar.lagi<sup>®</sup></a>
+      <div class="auth-intro-main">
+        <p class="auth-kicker">Platform belajar</p>
+        <h1 class="mega auth-title">Masuk.<br>Lanjutkan belajar.</h1>
+        <p class="page-lead">Katalog kelas bisa dilihat tanpa akun. Lesson, progres, dan catatan membutuhkan login.</p>
+      </div>
+      <p class="auth-note small text-muted">Try first. Think before asking AI.</p>
+    </section>
+    <section class="auth-panel">
+      <div class="auth-head">
+        <p class="auth-kicker">Akses akun</p>
+        <h2 class="mega">Masuk</h2>
+      </div>
+      <form class="auth-form" onsubmit="return actLogin(event)">
+        <label>Email<input id="login-email" type="email" autocomplete="username" required autofocus></label>
+        <label>Password<input id="login-password" type="password" autocomplete="current-password" required></label>
+        <div id="login-error" class="alert alert-danger" style="display:none"></div>
+        <button class="button" type="submit">Masuk →</button>
+      </form>
+      <div class="auth-alt">
+        <p class="small text-muted" style="margin-bottom:0">Akun dibuat oleh admin. Belum punya akun? Hubungi admin.</p>
+        <a class="small auth-link" href="#/courses">Lihat katalog kelas tanpa masuk →</a>
+      </div>
+    </section>
+  </div></div>`;
 }
 
 async function actLogin(event) {
@@ -1004,6 +1018,10 @@ async function actSaveMistake() {
 async function actDelMistake(id) { await api('/api/mistakes/' + id, 'DELETE'); route(); }
 
 /* ================= Router ================= */
+function pageGames() {
+  return '<div id="game-root"></div>';
+}
+
 const pageMap = {
   'dashboard': pageDashboard, 'courses': pageCourses, 'my-learning': pageMyLearning,
   'roadmap': pageRoadmap, 'challenges': pageChallenges,
@@ -1014,11 +1032,12 @@ const pageMap = {
 
 async function route() {
   if (!authLoaded) return;
+  if (window.BLGames) window.BLGames.stop();
   const hash = location.hash.replace(/^#\//, '') || 'dashboard';
   const parts = hash.split('/');
   const seg = parts[0] || 'dashboard';
   const sub = parts[1];
-  const publicRoute = seg === 'courses' || seg === 'login';
+  const publicRoute = seg === 'courses' || seg === 'login' || seg === 'games';
 
   if (seg === 'login' && currentUser) {
     location.hash = '#/dashboard';
@@ -1032,7 +1051,8 @@ async function route() {
   }
 
   document.body.classList.toggle('auth-mode', seg === 'login');
-  document.body.classList.toggle('public-mode', !currentUser && seg === 'courses');
+  document.body.classList.toggle('games-mode', seg === 'games');
+  document.body.classList.toggle('public-mode', !currentUser && (seg === 'courses' || seg === 'games'));
   document.querySelectorAll('.sidebar-nav a.active, .mobile-drawer a.active')
     .forEach(el => el.classList.remove('active'));
   const navID = seg === 'lessons' || seg === 'challenge' ? (seg === 'challenge' ? 'challenges' : seg) : seg;
@@ -1047,6 +1067,7 @@ async function route() {
     else if (seg === 'challenge') el.innerHTML = await pageChallenge(sub);
     else if (seg === 'interview') el.innerHTML = await pageInterview(sub);
     else if (seg === 'courses') el.innerHTML = sub ? await pageCourse(sub) : await pageCourses();
+    else if (seg === 'games') el.innerHTML = pageGames();
     else if (pageMap[seg]) el.innerHTML = await pageMap[seg]();
     else el.innerHTML = '<h1 class="mega">404</h1><p>Halaman tidak ditemukan.</p>';
   } catch (e) {
@@ -1056,8 +1077,17 @@ async function route() {
     }
     el.innerHTML = `<div class="alert alert-danger"><h4 class="alert-heading">Error</h4><pre class="mb-0" style="white-space:pre-wrap">${esc(e.message)}</pre></div>`;
   }
-  const titles = { dashboard: 'Dashboard', courses: 'Kelas', login: 'Masuk', 'my-learning': 'Kelas Saya', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', interview: 'Interview Prep', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings' };
-  document.title = (titles[seg] || 'Belajar Lagi') + ' · Belajar Lagi';
+  if (seg === 'games') {
+    if (window.BLGames) window.BLGames.mount(sub);
+    else {
+      const root = document.getElementById('game-root');
+      if (root) root.innerHTML = '<p>Games gagal dimuat. Muat ulang halaman.</p>';
+    }
+  }
+  const titles = { dashboard: 'Dashboard', courses: 'Kelas', login: 'Masuk', 'my-learning': 'Kelas Saya', roadmap: 'Roadmap', lessons: 'Belajar', challenges: 'Challenges', interview: 'Interview Prep', playground: 'Playground', projects: 'Projects', notes: 'Notes', mistakes: 'Mistake Journal', progress: 'Progress', weekly: 'Weekly Review', settings: 'Settings', games: 'Games' };
+  const gameTitles = { blok: 'Blok', ular: 'Ular', labirin: 'Labirin' };
+  const pageTitle = seg === 'games' && gameTitles[sub] ? gameTitles[sub] : titles[seg];
+  document.title = (pageTitle || 'Belajar Lagi') + ' · Belajar Lagi';
   window.scrollTo(0, 0);
   renderUserBox();
   if (window.feather) feather.replace();

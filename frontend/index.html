@@ -7,11 +7,12 @@
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
 <title>Belajar Lagi</title>
-<link rel="shortcut icon" type="image/x-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23181818'/><text x='32' y='45' text-anchor='middle' font-family='Helvetica,Arial,sans-serif' font-size='32' font-weight='700' letter-spacing='-1.5' fill='%23f5f5f0'>B.L</text></svg>">
 <!-- Design system (local, adapted from dimasaulia.my.id) -->
 <link rel="stylesheet" href="/static/design.css?v=8">
 <!-- Bespoke layer: markdown, code output, app components -->
-<link rel="stylesheet" href="/static/style.css?v=15">
+<link rel="stylesheet" href="/static/style.css?v=19">
+<link rel="stylesheet" href="/static/games.css?v=6">
 </head>
 
 <body class="dashboard">
@@ -36,6 +37,9 @@
     <a href="#/mistakes" data-nav>Mistakes</a>
     <a href="#/progress" data-nav>Progress</a>
     <a href="#/weekly" data-nav>Weekly</a>
+
+    <span class="nav-group">Main</span>
+    <a href="#/games" data-nav>Games</a>
 
     <span class="nav-group">Sistem</span>
     <a href="#/settings" data-nav>Settings</a>
@@ -70,6 +74,8 @@
   <a href="#/mistakes" data-nav onclick="closeMobile()">Mistakes</a>
   <a href="#/progress" data-nav onclick="closeMobile()">Progress</a>
   <a href="#/weekly" data-nav onclick="closeMobile()">Weekly</a>
+  <span class="nav-group">Main</span>
+  <a href="#/games" data-nav onclick="closeMobile()">Games</a>
   <span class="nav-group">Sistem</span>
   <a href="#/settings" data-nav onclick="closeMobile()">Settings</a>
   <div class="user-box drawer-user" id="user-box-mobile"></div>
@@ -86,12 +92,6 @@
     <div>
       <div class="logo-text">belajar.lagi<sup>®</sup></div>
       <div class="text-muted small" style="margin-top:.25rem">Try first. Think before asking AI.</div>
-    </div>
-    <div class="footer-links">
-      <a href="#/dashboard">Dashboard</a>
-      <a href="#/roadmap">Roadmap</a>
-      <a href="#/progress">Progress</a>
-      <a href="#/settings">Settings</a>
     </div>
     <div class="text-muted small" id="footer-time"></div>
   </div>
@@ -111,6 +111,7 @@
 </div>
 
 <script src="/js/vendor/feather.min.js?v=4.29.0"></script>
-<script src="/js/app.js?v=17"></script>
+<script src="/js/games.js?v=6"></script>
+<script src="/js/app.js?v=20"></script>
 </body>
 </html>
